@@ -51,7 +51,7 @@ $action = GETPOST('action');
 
 
 // Security check
-if (empty($conf->discountrules->enabled)) accessforbidden('Module not enabled');
+if (!isModEnabled('discountrules')) accessforbidden('Module not enabled');
 
 
 // DISPLAY OBJECT LINES OF DOCUMENTS
@@ -177,7 +177,7 @@ function _exportProductsPrices(){
 	require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.product.class.php';
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/product.lib.php';
-	if (!empty($conf->categorie->enabled))
+	if (isModEnabled('categorie'))
 		require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 
 
@@ -232,7 +232,7 @@ function _exportProductsPrices(){
 
 
 	//Show/hide child products
-	if (!empty($conf->variants->enabled) && getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD')) {
+	if (isModEnabled('variants') && getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD')) {
 		$show_childproducts = GETPOST('search_show_childproducts');
 	} else {
 		$show_childproducts = '';
@@ -292,7 +292,7 @@ function _exportProductsPrices(){
 		$fieldstosearchall['pl.note'] = 'ProductNoteTranslated';
 	}
 
-	if (!empty($conf->barcode->enabled)) {
+	if (isModEnabled('barcode')) {
 		$fieldstosearchall['p.barcode'] = 'Gencod';
 		$fieldstosearchall['pfp.barcode'] = 'GencodBuyPrice';
 	}
@@ -308,7 +308,7 @@ function _exportProductsPrices(){
 		'p.ref'=>array('label'=>$langs->transnoentities("Ref"), 'checked'=>1),
 		//'pfp.ref_fourn'=>array('label'=>$langs->trans("RefSupplier"), 'checked'=>1, 'enabled'=>(! empty($conf->barcode->enabled))),
 		'p.label'=>array('label'=>$langs->transnoentities("Label"), 'checked'=>1, 'position'=>10),
-		'p.fk_product_type'=>array('label'=>$langs->transnoentities("Type"), 'checked'=>0, 'enabled'=>(!empty($conf->product->enabled) && !empty($conf->service->enabled)), 'position'=>11),
+		'p.fk_product_type'=>array('label'=>$langs->transnoentities("Type"), 'checked'=>0, 'enabled'=>(isModEnabled('>product') && !empty($conf->service->enabled)), 'position'=>11),
 		'p.sellprice'=>array('label'=>$langs->transnoentities("BaseSellingPrice"), 'checked'=>1, 'enabled'=>!getDolGlobalInt('PRODUIT_MULTIPRICES'), 'position'=>40),
 		'discountlabel'=>array('label'=>$langs->transnoentities("Discountrule"), 'checked'=>1,  'position'=>40),
 		'discountproductprice'=>array('label'=>$langs->transnoentities("NewProductPrice"), 'checked'=>1, 'position'=>50),
@@ -343,7 +343,7 @@ function _exportProductsPrices(){
 	$sql .= ' p.weight, p.weight_units, p.length, p.length_units, p.width, p.width_units, p.height, p.height_units, p.surface, p.surface_units, p.volume, p.volume_units,';
 	if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= ' p.fk_unit, cu.label as cu_label,';
 	$sql .= ' MIN(pfp.unitprice) as minsellprice';
-	if (!empty($conf->variants->enabled) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+	if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 		$sql .= ', pac.rowid prod_comb_id';
 	}
 	// Add fields from extrafields
@@ -361,7 +361,7 @@ function _exportProductsPrices(){
 	// multilang
 	if (getDolGlobalInt('MAIN_MULTILANGS')) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_lang as pl ON pl.fk_product = p.rowid AND pl.lang = '".$langs->getDefaultLang()."'";
 
-	if (!empty($conf->variants->enabled) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+	if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_attribute_combination pac ON pac.fk_product_child = p.rowid";
 	}
 	if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_units cu ON cu.rowid = p.fk_unit";
@@ -376,7 +376,7 @@ function _exportProductsPrices(){
 		else $sql .= " AND p.fk_product_type <> 1";
 	}
 
-	if (!empty($conf->variants->enabled) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+	if (isModEnabled('variants'!empty($conf->variants->enabled) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 		$sql .= " AND pac.rowid IS NULL";
 	}
 
@@ -430,7 +430,7 @@ function _exportProductsPrices(){
 	$sql .= ' p.weight, p.weight_units, p.length, p.length_units, p.width, p.width_units, p.height, p.height_units, p.surface, p.surface_units, p.volume, p.volume_units';
 	if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= ', p.fk_unit, cu.label';
 
-	if (!empty($conf->variants->enabled) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+	if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 		$sql .= ', pac.rowid';
 	}
 	// Add fields from extrafields

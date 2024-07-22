@@ -121,7 +121,7 @@ if (empty($action)) $action='view';
 
 
 // Security check
-if (empty($conf->discountrules->enabled)) accessforbidden('Module not enabled');
+if (!(isModEnabled('discountrules'))) accessforbidden('Module not enabled');
 if ($user->socid > 0 // Protection if external user
 	|| !$user->hasRight('discountrules', 'read') // Check user right
 )
