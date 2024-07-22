@@ -27,6 +27,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+global $langs;
 
 /**
  *  \file       htdocs/product/list.php
@@ -54,12 +55,12 @@ require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.product.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/product.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formother.class.php';
-if (!(isModEnabled('categorie')))
+if (isModEnabled('categorie'))
 	require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 
 // Load translation files required by the page
 $langs->loadLangs(array('products', 'stocks', 'suppliers', 'companies'));
-if (!!(isModEnabled('productbatch'))) $langs->load("productbatch");
+if (isModEnabled('productbatch')) $langs->load("productbatch");
 
 $action = GETPOST('action', 'alpha');
 $massaction = GETPOST('massaction', 'alpha');
@@ -114,7 +115,7 @@ if(!empty($fk_company)){
 
 
 //Show/hide child products
-if (!(isModEnabled('variants')) && getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD')) {
+if (isModEnabled('variants') && getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD')) {
 	$show_childproducts = GETPOST('search_show_childproducts');
 } else {
 	$show_childproducts = '';
@@ -184,7 +185,7 @@ if (getDolGlobalInt('MAIN_MULTILANGS'))
 	$fieldstosearchall['pl.note'] = 'ProductNoteTranslated';
 }
 
-if (!(isModEnabled('barcode'))) {
+if (isModEnabled('barcode')) {
 	$fieldstosearchall['p.barcode'] = 'Gencod';
 	$fieldstosearchall['pfp.barcode'] = 'GencodBuyPrice';
 }
@@ -208,7 +209,7 @@ $arrayfields = array(
 		'p.ref'=>array('label'=>$langs->trans("Ref"), 'checked'=>1),
 		//'pfp.ref_fourn'=>array('label'=>$langs->trans("RefSupplier"), 'checked'=>1, 'enabled'=>(! empty($conf->barcode->enabled))),
 		'p.label'=>array('label'=>$langs->trans("Label"), 'checked'=>1, 'position'=>10),
-		'p.fk_product_type'=>array('label'=>$langs->trans("Type"), 'checked'=>0, 'enabled'=>(!(isModEnabled('>product')) && !empty($conf->service->enabled)), 'position'=>11),
+		'p.fk_product_type'=>array('label'=>$langs->trans("Type"), 'checked'=>0, 'enabled'=>(isModEnabled('>product') && !empty($conf->service->enabled)), 'position'=>11),
 		'p.sellprice'=>array('label'=>$langs->trans("BaseSellingPrice"), 'checked'=>1, 'enabled'=>!getDolGlobalInt('PRODUIT_MULTIPRICES'), 'position'=>40),
 		'discountlabel'=>array('label'=>$langs->trans("Discountrule"), 'checked'=>1,  'position'=>40),
 		'discountproductprice'=>array('label'=>$langs->trans("NewProductPrice"), 'checked'=>1, 'position'=>50),
@@ -324,7 +325,7 @@ $sql .= ' p.datec as date_creation, p.tms as date_update, p.pmp, p.stock,';
 $sql .= ' p.weight, p.weight_units, p.length, p.length_units, p.width, p.width_units, p.height, p.height_units, p.surface, p.surface_units, p.volume, p.volume_units,';
 if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= ' p.fk_unit, cu.label as cu_label,';
 $sql .= ' MIN(pfp.unitprice) as minsellprice';
-if (!(isModEnabled('variants')) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 	$sql .= ', pac.rowid prod_comb_id';
 }
 // Add fields from extrafields
@@ -342,7 +343,7 @@ $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_fournisseur_price as pfp ON p.rowi
 // multilang
 if (getDolGlobalInt('MAIN_MULTILANGS')) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_lang as pl ON pl.fk_product = p.rowid AND pl.lang = '".$langs->getDefaultLang()."'";
 
-if (!(isModEnabled('variants')) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 	$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_attribute_combination pac ON pac.fk_product_child = p.rowid";
 }
 if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_units cu ON cu.rowid = p.fk_unit";
@@ -357,7 +358,7 @@ if (dol_strlen($search_type) && $search_type != '-1')
 	else $sql .= " AND p.fk_product_type <> 1";
 }
 
-if (!(isModEnabled('variants')) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 	$sql .= " AND pac.rowid IS NULL";
 }
 
@@ -411,7 +412,7 @@ $sql .= ' p.accountancy_code_buy, p.accountancy_code_buy_intra, p.accountancy_co
 $sql .= ' p.weight, p.weight_units, p.length, p.length_units, p.width, p.width_units, p.height, p.height_units, p.surface, p.surface_units, p.volume, p.volume_units';
 if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= ', p.fk_unit, cu.label';
 
-if (!(isModEnabled('variants')) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 	$sql .= ', pac.rowid';
 }
 // Add fields from extrafields
@@ -601,7 +602,7 @@ if ($resql)
 	$moreforfilter .= '<div class="divsearchfield" style="clear: both;"><small>'.$langs->trans('SearchInputs').' : </small></div>';
 
 	// Filter on supplier
-	if (!(isModEnabled('fournisseur')))
+	if (isModEnabled('fournisseur'))
 	{
 		$moreforfilter .= '<div class="divsearchfield" >';
 		$moreforfilter .= $langs->trans('Supplier').': ';
@@ -623,7 +624,7 @@ if ($resql)
 	}
 
 	//Show/hide child products. Hidden by default
-	if (!(isModEnabled('variants')) && getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD')) {
+	if (isModEnabled('variants') && getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD')) {
 		$moreforfilter .= '<div class="divsearchfield">';
 		$moreforfilter .= '<input type="checkbox" id="search_show_childproducts" name="search_show_childproducts"'.($show_childproducts ? 'checked="checked"' : '').'>';
 		$moreforfilter .= ' <label for="search_show_childproducts">'.$langs->trans('ShowChildProducts').'</label>';

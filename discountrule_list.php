@@ -594,7 +594,7 @@ foreach($object->fields as $key => $val){
 	}
 }
 
-if (!(isModEnabled('categorie')))
+if (isModEnabled('categorie'))
 {
 	$moreforfilter = true;
 	print '<div class="liste_titre liste_titre_bydiv centpercent" >';
