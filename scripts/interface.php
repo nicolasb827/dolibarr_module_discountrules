@@ -376,7 +376,7 @@ function _exportProductsPrices(){
 		else $sql .= " AND p.fk_product_type <> 1";
 	}
 
-	if (isModEnabled('variants'!empty($conf->variants->enabled) && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
+	if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
 		$sql .= " AND pac.rowid IS NULL";
 	}
 
