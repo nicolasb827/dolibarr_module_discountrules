@@ -487,7 +487,7 @@ class DiscountRule extends CommonObject
 		// 4=Visible on list and update/view form only (not create).
 		// Using a negative value means field is not shown by default on list but can be selected for viewing)
 
-		if($conf->categorie->enabled){
+		if(isModEnabled('categorie')){
 			// visibility
 			$this->fields['all_category_product']['visible'] = 1; // set to 0 if fk_product is defined
 			$this->fields['all_category_product']['enabled'] = 1; // set to 0 if fk_product is defined
@@ -1776,7 +1776,7 @@ class DiscountRule extends CommonObject
 	{
 		global $conf, $langs, $form, $user;
 
-		if ($conf->categorie->enabled) {
+		if (isModEnabled('categorie')) {
 			include_once DOL_DOCUMENT_ROOT . '/categories/class/categorie.class.php';
 		}
 

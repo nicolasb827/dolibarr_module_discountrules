@@ -131,7 +131,7 @@ if (! $sortfield) $sortfield="t.".key($object->fields);   // Set here default se
 if (! $sortorder) $sortorder="ASC";
 
 // Security check
-if (empty($conf->discountrules->enabled)) accessforbidden('Module not enabled');
+if (!(isModEnabled('discountrules'))) accessforbidden('Module not enabled');
 $socid=0;
 if ($user->socid > 0 // Protection if external user
 		|| !$user->hasRight('discountrules', 'read') // Check user right
@@ -594,7 +594,7 @@ foreach($object->fields as $key => $val){
 	}
 }
 
-if (!empty($conf->categorie->enabled))
+if (isModEnabled('categorie'))
 {
 	$moreforfilter = true;
 	print '<div class="liste_titre liste_titre_bydiv centpercent" >';

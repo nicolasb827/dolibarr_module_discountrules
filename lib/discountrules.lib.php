@@ -431,7 +431,7 @@ function discountRuleDocumentsLines($object){
 
 
 			// Check if line is a subtotal
-			if (!empty($conf->subtotal->enabled)){
+			if (isModEnabled('subtotal')){
 				if(!class_exists('TSubtotal')) {
 					dol_include_once('subtotal/class/subtotal.class.php');
 				}

@@ -425,7 +425,7 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 	{
 		global $langs, $conf;
 		// PRODUCTS MASSS ACTION
-		if (in_array($parameters['currentcontext'], array('productservicelist', 'servicelist', 'productlist')) && !empty($conf->category->enabled)) {
+		if (in_array($parameters['currentcontext'], array('productservicelist', 'servicelist', 'productlist')) && isModEnabled('category')) {
 			$ret = '<option value="addtocategory">' . $langs->trans('massaction_add_to_category') . '</option>';
 			$ret .= '<option value="removefromcategory">' . $langs->trans('massaction_remove_from_category') . '</option>';
 
