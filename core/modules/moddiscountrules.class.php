@@ -176,7 +176,7 @@ class moddiscountrules extends DolibarrModules
             // 'thirdparty:+discountrules:TabTitleDiscountRule:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?fk_company=__ID__', // Todo : rectifier le bug de bouble affichage
         );
 
-		if (! isset($conf->discountrules) || isModEnabled('discountrules'))
+		if (! isset($conf->discountrules) || ! isModEnabled('discountrules'))
         {
         	$conf->discountrules=new stdClass();
         	$conf->discountrules->enabled=0;
