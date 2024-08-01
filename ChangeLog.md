@@ -1,7 +1,12 @@
 # CHANGELOG FOR DISCOUNTRULES MODULE
 
 ## Not Released
-- NEW : COMPAT V20 - *22/07/2024* - 2.24
+
+
+
+## RELEASE 2.24
+
+- NEW : compatibility V20, changed Dolibarr compatibility range 16.0 to 20.0 - *22/07/2024* - 2.24.0
 
 
 ## RELEASE 2.23
