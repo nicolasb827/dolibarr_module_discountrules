@@ -73,7 +73,7 @@ class moddiscountrules extends DolibarrModules
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
 
-		$this->version = '2.24.0';
+		$this->version = '2.24.1';
 
 		// Key used in llx_const table to save module status enabled/disabled (where discountrules is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
@@ -289,7 +289,7 @@ class moddiscountrules extends DolibarrModules
                     		    'langs'=>'discountrules@discountrules',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
                     		    'position'=>1000+$r,
                     		    'enabled'=>'isModEnabled("discountrules")',  // Define condition to show or hide menu entry. Use '$conf->discountrules->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-                    		    'perms'=>'$user->rights->discountrules->read',			                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
+								'perms'=>'$user->hasRight("discountrules", "read")',			                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
                     		    'target'=>'',
                     		    'prefix' => '<span class="fas fa-tag em092 pictofixedwidth discount-rules-left-menu-picto" style="color: #e72400;"></span>',
                     		    'user'=>0
@@ -308,7 +308,7 @@ class moddiscountrules extends DolibarrModules
 								'langs'=>'discountrules@discountrules',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 								'position'=>1000+$r,
 								'enabled'=>'isModEnabled("discountrules")',  // Define condition to show or hide menu entry. Use '$conf->discountrules->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-								'perms'=>'$user->rights->discountrules->create',			                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
+								'perms'=>'$user->hasRight("discountrules", "create")',			                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
 								'target'=>'',
 								'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
@@ -322,7 +322,7 @@ class moddiscountrules extends DolibarrModules
             'langs'=>'discountrules@discountrules',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'position'=>1000+$r,
             'enabled'=>'isModEnabled("discountrules")',  // Define condition to show or hide menu entry. Use '$conf->discountrules->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-            'perms'=>'$user->rights->discountrules->read',			                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
+			'perms'=>'$user->hasRight("discountrules", "read")',		                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
             'target'=>'',
             'user'=>0
 		);
@@ -338,7 +338,7 @@ class moddiscountrules extends DolibarrModules
             'langs'=>'discountrules@discountrules',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'position'=>1000+$r,
             'enabled'=>'isModEnabled("discountrules")',  // Define condition to show or hide menu entry. Use '$conf->discountrules->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-            'perms'=>'$user->rights->discountrules->read',			                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
+			'perms'=>'$user->hasRight("discountrules", "read")',			                // Use 'perms'=>'$user->rights->discountrules->level1->level2' if you want your menu with a permission rules
             'target'=>'',
             'user'=>0
 		);
@@ -357,7 +357,7 @@ class moddiscountrules extends DolibarrModules
 			'langs'=>'importdiscountrules@discountrules', // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 			'position'=>1000 + $r,
 			'enabled'=>'isModEnabled("discountrules")', // Define condition to show or hide menu entry. Use '$conf->importdiscountrules->enabled' if entry must be visible if module is enabled.
-			'perms'=>'$user->rights->discountrules->create',			                // Use 'perms'=>'$user->rights->cliaufildesmatieres->level1->level2' if you want your menu with a permission rules
+			'perms'=>'$user->hasRight("discountrules", "create")',			                // Use 'perms'=>'$user->rights->cliaufildesmatieres->level1->level2' if you want your menu with a permission rules
 			'target'=>'',
 			'user'=>0, // 0=Menu for internal users, 1=external users, 2=both
 		);
