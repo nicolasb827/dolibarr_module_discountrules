@@ -5,7 +5,7 @@
 
 
 ## RELEASE 2.24
-
+- FIX : fatal on round function  with null parameters - *20/02/2025* - 2.24.2  
 - FIX : COMPAT V21 - **06/01/2025** - 2.24.1
 - NEW : compatibility V20, changed Dolibarr compatibility range 16.0 to 20.0 - *22/07/2024* - 2.24.0
 

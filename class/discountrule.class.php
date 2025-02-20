@@ -1079,7 +1079,9 @@ class DiscountRule extends CommonObject
 
 			// si pas de prix client alors on force sur le prix de la fiche produit
 			if (empty($baseSubprice)) {
-				$baseSubprice = $product->price;
+				// prevent fatal
+				// on ne veut pas passer null à la fonction priceToNum dans le cas ou pas de price
+				$baseSubprice = $product->price ?? 0;
 			}
 
 			return round(price2num($baseSubprice), getDolGlobalInt('MAIN_MAX_DECIMALS_UNIT'));
