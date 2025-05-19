@@ -599,4 +599,42 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 
 		return 0;
 	}
+
+	public function llxFooter($parameters, &$object, &$action, $hookmanager)
+	{
+		global $conf, $langs;
+
+		//Recup le taux selectionné + Taux minimum
+		$options = array(0 => 'MarkRate', 1 => 'MarginRate');
+		$valueConfMarkupMarginRate = $options[getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE')];
+		$minimumRate = getDolGlobalFloat('DISCOUNTRULES_MINIMUM_RATE');
+
+		?>
+		<script type="text/javascript">
+			$(document).ready(function () {
+
+
+				tdArray = [];
+				let valueConf = '<?php echo addslashes($valueConfMarkupMarginRate); ?>';
+				let imgWarning = '<?php echo img_warning($langs->trans("WarningDiscountrulesMinimumRate",($langs->trans($valueConfMarkupMarginRate)),$minimumRate)); ?>';
+
+				if (valueConf === 'MarginRate') {
+					tdArray = $('td.linecolmargin2.margininfos');
+				}
+				if (valueConf === 'MarkRate') {
+					tdArray = $('td.linecolmark1.margininfos');
+				}
+
+				$(tdArray).each(function (index, element) {
+					let raw = $(element).text().trim();                      // Ex: "54,80%"
+					let value = parseFloat(raw.replace(',', '.').replace('%', '')); // Convertit en 54.80
+
+					if (value < <?php echo $minimumRate ?>) {
+						$(element).append(imgWarning);                      // Affichage Picto
+					}
+				});
+			});
+		</script>
+		<?php
+	}
 }

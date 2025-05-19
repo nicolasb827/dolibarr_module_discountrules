@@ -213,3 +213,7 @@ DiscountRulesExtraFields = Attributs supplémentaires
 DiscountRulesSetupExtrafield = Paramètres des attributs supplémentaires de DiscountRules
 BuyPriceHt = Prix d'achat HT
 DialogUpdatePrice = Configuration de la boite de dialogue permettant la mise à jour des lignes de documents
+SelectMarkupMarginRate = Taux sélectionné
+SelectMinimumRate = Taux minimum souhaité
+SelectMarkupMarginRateHelp = Lors de l'ajout d'une ligne de devis, faire en sorte que la marque/marge appliquée soit celle présente dans la configuration "Taux minimum souhaité"
+WarningDiscountrulesMinimumRate = %s inférieur au taux minimum : %s%%
