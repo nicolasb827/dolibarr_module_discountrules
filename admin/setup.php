@@ -108,7 +108,6 @@ $options = array('MarkRate','MarginRate');
 $confKey = 'DISCOUNTRULES_MARKUP_MARGIN_RATE';
 $type = Form::selectarray('value'.($inputCount+1), $options, getDolGlobalInt($confKey) ?? '',1,0,0,'',1);
 _printInputFormPart($confKey, $langs->trans('SelectMarkupMarginRate'), '', array(), $type, 'SelectMarkupMarginRateHelp');
-var_dump($options[getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE')]);
 
 
 // Taux minimum souhaité

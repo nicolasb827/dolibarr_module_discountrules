@@ -131,9 +131,7 @@ class InterfaceDiscountrulesTriggers extends DolibarrTriggers
 			$line = $currentObject;
 
 
-			if(getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE') >= 0){
-
-				if($action == 'LINEPROPAL_INSERT'){
+			if(getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE') >= 0 && $action == 'LINEPROPAL_INSERT'){
 
 					//Define value for conf DISCOUNTRULES_MARKUP_MARGIN_RATE & DISCOUNTRULES_MINIMUM_RATE
 					$options = array(
@@ -147,7 +145,11 @@ class InterfaceDiscountrulesTriggers extends DolibarrTriggers
 					if (!empty($valueConfMarkupMarginRate)){
 						$costPrice = 0;
 						if(empty($line->fk_product)){
-							$costPrice = GETPOST('buying_price');
+							$costPrice = GETPOST('buying_price','int');
+							if (empty($costPrice)){
+								return 0;
+							}
+
 						} else {
 							$myProduct = new Product($this->db);
 							$myProduct->fetch($currentObject->fk_product);
@@ -165,8 +167,10 @@ class InterfaceDiscountrulesTriggers extends DolibarrTriggers
 						//Total HT
 						$currentObject->total_ht = price($currentObject->subprice * $currentObject->qty);
 						$res = $currentObject->update($user);
+						if(!$res){
+							setEventMessages($currentObject->error, $currentObject->errors, 'errors');
+						}
 					}
-				}
 			}
 
 			// nothing to do if no product

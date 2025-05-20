@@ -626,11 +626,11 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 				}
 
 				$(tdArray).each(function (index, element) {
-					let raw = $(element).text().trim();                      // Ex: "54,80%"
-					let value = parseFloat(raw.replace(',', '.').replace('%', '')); // Convertit en 54.80
+					let raw = $(element).text().trim();
+					let value = parseFloat(raw.replace(',', '.').replace('%', ''));
 
 					if (value < <?php echo $minimumRate ?>) {
-						$(element).append(imgWarning);                      // Affichage Picto
+						$(element).append(imgWarning);
 					}
 				});
 			});
