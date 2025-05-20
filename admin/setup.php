@@ -103,6 +103,23 @@ _printOnOff('DISCOUNTRULES_SEARCH_WITHOUT_DOCUMENTS_DATE');
 _printOnOff('DISCOUNTRULES_ALLOW_APPLY_DISCOUNT_TO_TAKE_POS');
 _printOnOff('DISCOUNTRULES_FORCE_RULES_PRICES', $langs->trans('DISCOUNTRULES_FORCE_RULES_PRICES'), $langs->trans('DISCOUNTRULES_FORCE_RULES_PRICES_DESC'));
 
+// Taux sélectionné
+$options = array('MarkRate','MarginRate');
+$confKey = 'DISCOUNTRULES_MARKUP_MARGIN_RATE';
+$type = Form::selectarray('value'.($inputCount+1), $options, getDolGlobalInt($confKey) ?? '',1,0,0,'',1);
+_printInputFormPart($confKey, $langs->trans('SelectMarkupMarginRate'), '', array(), $type, 'SelectMarkupMarginRateHelp');
+
+
+// Taux minimum souhaité
+if (getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE') >= 0){
+	$metas = array( 'type' => 'number', 'step' => '0.1', 'min' => 0 );
+	_printInputFormPart('DISCOUNTRULES_MINIMUM_RATE', $langs->trans('SelectMinimumRate'), '', $metas);
+} else {
+	// Delete
+	dolibarr_del_const($db, 'DISCOUNTRULES_MINIMUM_RATE');
+}
+
+
 print '</table>';
 
 
