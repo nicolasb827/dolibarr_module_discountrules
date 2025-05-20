@@ -145,7 +145,7 @@ class InterfaceDiscountrulesTriggers extends DolibarrTriggers
 					if (!empty($valueConfMarkupMarginRate)){
 						$costPrice = 0;
 						if(empty($line->fk_product)){
-							$costPrice = GETPOST('buying_price','int');
+							$costPrice = GETPOST('buying_price');
 							if (empty($costPrice)){
 								return 0;
 							}
@@ -158,14 +158,13 @@ class InterfaceDiscountrulesTriggers extends DolibarrTriggers
 
 						//Subprice for MarkRate / MarginRate
 						if ($valueConfMarkupMarginRate == 'MarkRate'){
-							$currentObject->subprice = price($costPrice / (1 - $minimumRate / 100));
+							$currentObject->subprice = price2num($costPrice / (1 - $minimumRate / 100));
 						}elseif ($valueConfMarkupMarginRate == 'MarginRate'){
-							$currentObject->subprice = price($costPrice * (1 + $minimumRate / 100));
+							$currentObject->subprice = price2num($costPrice * (1 + $minimumRate / 100));
 
 						}
-
 						//Total HT
-						$currentObject->total_ht = price($currentObject->subprice * $currentObject->qty);
+						$currentObject->total_ht = $currentObject->subprice * $currentObject->qty;
 						$res = $currentObject->update($user);
 						if(!$res){
 							setEventMessages($currentObject->error, $currentObject->errors, 'errors');
