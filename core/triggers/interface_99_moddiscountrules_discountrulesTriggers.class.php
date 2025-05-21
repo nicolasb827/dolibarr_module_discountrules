@@ -145,7 +145,7 @@ class InterfaceDiscountrulesTriggers extends DolibarrTriggers
 					if (!empty($valueConfMarkupMarginRate)){
 						$costPrice = 0;
 						if(empty($line->fk_product)){
-							$costPrice = GETPOST('buying_price');
+							$costPrice = GETPOST('buying_price', 'int');
 							if (empty($costPrice)){
 								return 0;
 							}
