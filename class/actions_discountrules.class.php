@@ -614,9 +614,55 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 			$(document).ready(function () {
 
 
+
+
 				tdArray = [];
 				let valueConf = '<?php echo addslashes($valueConfMarkupMarginRate); ?>';
 				let imgWarning = '<?php echo img_warning($langs->trans("WarningDiscountrulesMinimumRate",($langs->trans($valueConfMarkupMarginRate)),$minimumRate)); ?>';
+				let tr = $('tr[id^="row"]');
+
+				$(tr).each(function (indextr,elementtr){
+					let td = $(elementtr).children('td');
+					//let value = parseFloat(raw.replace(',', '.').replace('%', ''));
+
+
+
+
+					$(td).each(function (indextd,elementtd){
+						$(elementtd).on('change', function () {
+
+							if (valueConf === 'MarginRate') {
+								var tdmarge = $(tr).find('td.linecolmargin2');
+							}
+							if (valueConf === 'MarkRate') {
+								var tdmarge = $(tr).find('td.linecolmark1');
+							}
+
+
+
+
+							//console.log(value)
+
+							setTimeout(function () {
+
+								let raw = $(tdmarge).text().trim();
+								let value = parseFloat(raw.replace(',', '.').replace('%', ''));
+								console.log(value)
+								if (value < <?php echo $minimumRate ?>) {
+									$(tdmarge).append($(imgWarning));
+								}else{
+									$(tdmarge).remove($(imgWarning));
+								}
+
+
+							}, 100);
+
+
+
+						})
+
+					});
+				});
 
 				if (valueConf === 'MarginRate') {
 					tdArray = $('td.linecolmargin2.margininfos');
@@ -626,8 +672,13 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 				}
 
 				$(tdArray).each(function (index, element) {
+					//console.log(element)
+
 					let raw = $(element).text().trim();
 					let value = parseFloat(raw.replace(',', '.').replace('%', ''));
+
+
+
 
 					if (value < <?php echo $minimumRate ?>) {
 						$(element).append(imgWarning);
