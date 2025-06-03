@@ -612,50 +612,52 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 		?>
 		<script type="text/javascript">
 			$(document).ready(function () {
-
-
-
-
-				tdArray = [];
 				let valueConf = '<?php echo addslashes($valueConfMarkupMarginRate); ?>';
 				let imgWarning = '<?php echo img_warning($langs->trans("WarningDiscountrulesMinimumRate",($langs->trans($valueConfMarkupMarginRate)),$minimumRate)); ?>';
 				let tr = $('tr[id^="row"]');
+				tdArray = [];
+				if (valueConf === 'MarginRate') {
+					tdArray = $('td.linecolmargin2.margininfos');
+				}
+				if (valueConf === 'MarkRate') {
+					tdArray = $('td.linecolmark1.margininfos');
+				}
 
-				$(tr).each(function (indextr,elementtr){
-					let td = $(elementtr).children('td');
-					//let value = parseFloat(raw.replace(',', '.').replace('%', ''));
+				//Dans un premier temps, on repasse sur tous les td (marge) de la page pour y inscrire le warning si nécéssaire
+				$(tdArray).each(function (index, td) {
+					let raw = $(td).text().trim();
+					let value = parseFloat(raw.replace(',', '.').replace('%', ''));
 
-
-
-
-					$(td).each(function (indextd,elementtd){
-						$(elementtd).on('change', function () {
-
-							if (valueConf === 'MarginRate') {
-								var tdmarge = $(tr).find('td.linecolmargin2');
-							}
-							if (valueConf === 'MarkRate') {
-								var tdmarge = $(tr).find('td.linecolmark1');
-							}
-
-
+					if (value < <?php echo $minimumRate ?>) {
+						$(td).append(imgWarning);
+					}
+				});
 
 
-							//console.log(value)
-
+				//On boucle ensuite sur tous les tr
+				$(tr).each(function (indexTr,elementTr){
+					let tdChildren = $(elementTr).children('td');
+					if (valueConf === 'MarginRate') {
+						var margeMarkTd = $(tr).find('td.linecolmargin2');
+					} else if (valueConf === 'MarkRate') {
+						var margeMarkTd = $(tr).find('td.linecolmark1');
+					}
+					//Puis sur tous les td pour y affecter un onChange
+					$(tdChildren).each(function (indexTd, elementTd){
+						$(elementTd).on('change', function () {
+							//Obligatoire de mettre un timeout conséquent pour que le JS de quickcustomerprice passe avant
 							setTimeout(function () {
 
-								let raw = $(tdmarge).text().trim();
-								let value = parseFloat(raw.replace(',', '.').replace('%', ''));
-								console.log(value)
+								let rawMargeMarkTd = $(margeMarkTd).text().trim();
+								let value = parseFloat(rawMargeMarkTd.replace(',', '.').replace('%', ''));
 								if (value < <?php echo $minimumRate ?>) {
-									$(tdmarge).append($(imgWarning));
+									$(margeMarkTd).children('span').remove()
+									$(margeMarkTd).append($(imgWarning));
 								}else{
-									$(tdmarge).remove($(imgWarning));
+									$(margeMarkTd).children('span').remove()
+
 								}
-
-
-							}, 100);
+							}, 200);
 
 
 
@@ -664,26 +666,7 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 					});
 				});
 
-				if (valueConf === 'MarginRate') {
-					tdArray = $('td.linecolmargin2.margininfos');
-				}
-				if (valueConf === 'MarkRate') {
-					tdArray = $('td.linecolmark1.margininfos');
-				}
 
-				$(tdArray).each(function (index, element) {
-					//console.log(element)
-
-					let raw = $(element).text().trim();
-					let value = parseFloat(raw.replace(',', '.').replace('%', ''));
-
-
-
-
-					if (value < <?php echo $minimumRate ?>) {
-						$(element).append(imgWarning);
-					}
-				});
 			});
 		</script>
 		<?php
