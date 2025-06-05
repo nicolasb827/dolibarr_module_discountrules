@@ -612,12 +612,17 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 		?>
 		<script type="text/javascript">
 			$(document).ready(function () {
-
-
-				tdArray = [];
+				// Get config value from PHP (either 'MarginRate' or 'MarkRate')
 				let valueConf = '<?php echo addslashes($valueConfMarkupMarginRate); ?>';
-				let imgWarning = '<?php echo img_warning($langs->trans("WarningDiscountrulesMinimumRate",($langs->trans($valueConfMarkupMarginRate)),$minimumRate)); ?>';
 
+				// Get warning image with translated message
+				let imgWarning = '<?php echo img_warning($langs->trans("WarningDiscountrulesMinimumRate", ($langs->trans($valueConfMarkupMarginRate)), $minimumRate)); ?>';
+
+				// Select all <tr> rows whose id starts with "row"
+				let tr = $('tr[id^="row"]');
+
+				// Initialize the array of target <td> cells (depending on valueConf)
+				let tdArray = [];
 				if (valueConf === 'MarginRate') {
 					tdArray = $('td.linecolmargin2.margininfos');
 				}
@@ -625,16 +630,52 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 					tdArray = $('td.linecolmark1.margininfos');
 				}
 
-				$(tdArray).each(function (index, element) {
-					let raw = $(element).text().trim();
+				// Loop over all margin cells to append the warning icon if the value is below the minimum
+				$(tdArray).each(function (index, td) {
+					let raw = $(td).text().trim();
 					let value = parseFloat(raw.replace(',', '.').replace('%', ''));
 
 					if (value < <?php echo $minimumRate ?>) {
-						$(element).append(imgWarning);
+						$(td).append(imgWarning);
 					}
+				});
+
+				// Loop over each row in the table
+				$(tr).each(function (indexTr, elementTr) {
+					let tdChildren = $(elementTr).children('td');
+
+					// Depending on the configuration, find the related margin or mark column in the same row
+					let margeMarkTd;
+					if (valueConf === 'MarginRate') {
+						margeMarkTd = $(elementTr).find('td.linecolmargin2');
+					} else if (valueConf === 'MarkRate') {
+						margeMarkTd = $(elementTr).find('td.linecolmark1');
+					}
+
+					// Attach a change event handler to each <td> in the row
+					$(tdChildren).each(function (indexTd, elementTd) {
+						$(elementTd).on('change', function () {
+
+							// Delay execution to let other scripts (e.g., quickcustomerprice) update the DOM first
+							setTimeout(function () {
+								let rawMargeMarkTd = $(margeMarkTd).text().trim();
+								let value = parseFloat(rawMargeMarkTd.replace(',', '.').replace('%', ''));
+
+								// If value is below threshold, show warning icon
+								if (value < <?php echo $minimumRate ?>) {
+									$(margeMarkTd).children('span').remove();
+									$(margeMarkTd).append($(imgWarning));
+								} else {
+									// Otherwise, remove any existing warning
+									$(margeMarkTd).children('span').remove();
+								}
+							}, 200); // Delay must be enough to ensure other DOM updates complete
+						});
+					});
 				});
 			});
 		</script>
+
 		<?php
 	}
 }
