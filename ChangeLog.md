@@ -6,6 +6,7 @@
 ## Not Released
 
 ## RELEASE 2.25
+- FIX : Mark/Margin minimum rate feature did not work with the module quickcustomerprice - *03/06/2025* - 2.25.1
 - NEW : Add Conf DISCOUNTRULES_MARKUP_MARGIN_RATE & DISCOUNTRULES_MINIMUM_RATE - *19/05/2025* - 2.25.0
 
 ## RELEASE 2.24
