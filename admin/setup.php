@@ -149,8 +149,6 @@ _printInputFormPart($confKey, $langs->trans('SelectMarkupMarginRate'), '', array
 $metas = array( 'type' => 'number', 'step' => '0.1', 'min' => 0 );
 _printInputFormPart('DISCOUNTRULES_MINIMUM_RATE', $langs->trans('SelectMinimumRate'), '', $metas);
 
-var_dump($_POST);
-
 print '</table>';
 
 
