@@ -60,6 +60,8 @@ SetupSaved = configuration sauvegardée
 GlobalConf = Configurations générales
 TypeOfDocuments = Types de documents
 OptionsConditions = Conditions d'application
+ErrorNoMinRate = Taux minimum non défini
+EmptyDISCOUNTRULES_MARKUP_MARGIN_RATEError = Taux de marque/marge vide
 
 DISCOUNTRULES_DOCUMENT_SEARCH_TYPE = Type de recherche tarifaire sur les documents
 LastCustomerPrice = Dernier prix pratiqué

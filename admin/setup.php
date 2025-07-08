@@ -36,7 +36,7 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-global $langs, $user;
+global $langs, $user,$conf,$db;
 $inputCount = 1;
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
@@ -56,9 +56,46 @@ $action = GETPOST('action', 'alpha');
 /*
  * Actions
  */
+if ($action == 'setModuleOptions'){
+
+	$minRateKey = GETPOST('DISCOUNTRULES_MINIMUM_RATE');
+	$markupRateKey = '';
+
+	foreach ($_POST as $key => $value) {
+		if (strpos($key, 'param') === 0) {
+			if ($value == 'DISCOUNTRULES_MINIMUM_RATE') {
+				$suffix = substr($key, 5); // récupère N
+				$minRateKey = 'value' . $suffix;
+			}
+			if ($value == 'DISCOUNTRULES_MARKUP_MARGIN_RATE') {
+				$suffix = substr($key, 5);
+				$markupRateKey = 'value' . $suffix;
+			}
+		}
+	}
+
+	$minValue = isset($_POST[$minRateKey]) ? (int)$_POST[$minRateKey] : '';
+	$markupValue = isset($_POST[$markupRateKey]) ? (int)$_POST[$markupRateKey] : '';
+
+
+	 if ($markupValue >= 0){
+		 if ($minValue <= 0){
+			 dol_syslog(__METHOD__ .$langs->trans('EmptyDISCOUNTRULES_MARKUP_MARGIN_RATEError') .': Taux minimum vide ou nul', LOG_ERR);
+			 setEventMessages($langs->trans('EmptyDISCOUNTRULES_MARKUP_MARGIN_RATEError'), null, 'errors');
+			 $action = '';
+		 }
+	 }else{
+		 if ($minValue > 0) {
+			 dolibarr_del_const($db, 'DISCOUNTRULES_MINIMUM_RATE');
+			 dol_syslog(__METHOD__ . $langs->trans('ErrorNoMinRate').': Suppression du taux min car type désélectionné', LOG_ERR);
+			 setEventMessages($langs->trans('ErrorNoMinRate'), null, 'errors');
+			 $action = '';
+		 }
+	 }
+
+}
 
 include DOL_DOCUMENT_ROOT.'/core/actions_setmoduleoptions.inc.php';
-
 
 /*
  * View
@@ -99,26 +136,18 @@ print '<table class="noborder" width="100%">';
 // conf qui permet de garder le comportement originel du module qui recherchait les règles de remises en prenant comme référence la date courante
 _printOnOff('DISCOUNTRULES_SEARCH_WITHOUT_DOCUMENTS_DATE');
 
-
 _printOnOff('DISCOUNTRULES_ALLOW_APPLY_DISCOUNT_TO_TAKE_POS');
 _printOnOff('DISCOUNTRULES_FORCE_RULES_PRICES', $langs->trans('DISCOUNTRULES_FORCE_RULES_PRICES'), $langs->trans('DISCOUNTRULES_FORCE_RULES_PRICES_DESC'));
 
 // Taux sélectionné
 $options = array('MarkRate','MarginRate');
 $confKey = 'DISCOUNTRULES_MARKUP_MARGIN_RATE';
-$type = Form::selectarray('value'.($inputCount+1), $options, getDolGlobalInt($confKey) ?? '',1,0,0,'',1);
+$type = Form::selectarray('value'.($inputCount+1), $options, getDolGlobalInt($confKey, -1),1,0,0,'',1);
 _printInputFormPart($confKey, $langs->trans('SelectMarkupMarginRate'), '', array(), $type, 'SelectMarkupMarginRateHelp');
 
-
 // Taux minimum souhaité
-if (getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE') >= 0){
-	$metas = array( 'type' => 'number', 'step' => '0.1', 'min' => 0 );
-	_printInputFormPart('DISCOUNTRULES_MINIMUM_RATE', $langs->trans('SelectMinimumRate'), '', $metas);
-} else {
-	// Delete
-	dolibarr_del_const($db, 'DISCOUNTRULES_MINIMUM_RATE');
-}
-
+$metas = array( 'type' => 'number', 'step' => '0.1', 'min' => 0 );
+_printInputFormPart('DISCOUNTRULES_MINIMUM_RATE', $langs->trans('SelectMinimumRate'), '', $metas);
 
 print '</table>';
 
