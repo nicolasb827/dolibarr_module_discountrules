@@ -59,7 +59,6 @@ $action = GETPOST('action', 'alpha');
 if ($action == 'setModuleOptions'){
 
 	$minRateKey = GETPOST('DISCOUNTRULES_MINIMUM_RATE');
-	var_dump($minRateKey);die();
 	$markupRateKey = '';
 
 	foreach ($_POST as $key => $value) {
@@ -97,7 +96,6 @@ if ($action == 'setModuleOptions'){
 }
 
 include DOL_DOCUMENT_ROOT.'/core/actions_setmoduleoptions.inc.php';
-var_dump(getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE'));
 
 /*
  * View
@@ -151,6 +149,7 @@ _printInputFormPart($confKey, $langs->trans('SelectMarkupMarginRate'), '', array
 $metas = array( 'type' => 'number', 'step' => '0.1', 'min' => 0 );
 _printInputFormPart('DISCOUNTRULES_MINIMUM_RATE', $langs->trans('SelectMinimumRate'), '', $metas);
 
+var_dump($_POST);
 
 print '</table>';
 
