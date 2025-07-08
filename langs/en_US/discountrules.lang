@@ -54,8 +54,8 @@ DISCOUNTRULES_SEARCH_DAYS = Number of days limit for searching in the past (leav
 DISCOUNTRULES_SEARCH_IN_DOCUMENTS_QTY_EQUIV = Search for lower or equal quantities of the same product / service
 DISCOUNTRULES_SEARCH_IN_DOCUMENTS_PROJECT_EQUIV = Search same project in documents
 DISCOUNTRULES_SEARCH_WITHOUT_DOCUMENTS_DATE = Search rules for current date instead of document date
-
-
+ErrorNoMinRate = You must define a minimum rate for the discount
+EmptyDISCOUNTRULES_MARKUP_MARGIN_RATEError = You must define a markup margin rate for the discount
 ###
 # About page
 #
