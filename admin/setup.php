@@ -36,7 +36,7 @@ if (! $res && file_exists("../../main.inc.php")) $res=@include("../../main.inc.p
 if (! $res && file_exists("../../../main.inc.php")) $res=@include("../../../main.inc.php");
 if (! $res) die("Include of main fails");
 
-global $langs, $user;
+global $langs, $user,$conf,$db;
 $inputCount = 1;
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
@@ -57,12 +57,11 @@ $action = GETPOST('action', 'alpha');
  * Actions
  */
 if ($action == 'setModuleOptions'){
-	global $db;
 
-
-
-	$minRateKey = '';
+	$minRateKey = GETPOST('DISCOUNTRULES_MINIMUM_RATE');
+	var_dump($minRateKey);die();
 	$markupRateKey = '';
+
 	foreach ($_POST as $key => $value) {
 		if (strpos($key, 'param') === 0) {
 			if ($value == 'DISCOUNTRULES_MINIMUM_RATE') {
@@ -82,12 +81,14 @@ if ($action == 'setModuleOptions'){
 
 	 if ($markupValue >= 0){
 		 if ($minValue <= 0){
+			 dol_syslog(__METHOD__ .$langs->trans('EmptyDISCOUNTRULES_MARKUP_MARGIN_RATEError') .': Taux minimum vide ou nul', LOG_ERR);
 			 setEventMessages($langs->trans('EmptyDISCOUNTRULES_MARKUP_MARGIN_RATEError'), null, 'errors');
 			 $action = '';
 		 }
 	 }else{
 		 if ($minValue > 0) {
 			 dolibarr_del_const($db, 'DISCOUNTRULES_MINIMUM_RATE');
+			 dol_syslog(__METHOD__ . $langs->trans('ErrorNoMinRate').': Suppression du taux min car type désélectionné', LOG_ERR);
 			 setEventMessages($langs->trans('ErrorNoMinRate'), null, 'errors');
 			 $action = '';
 		 }
@@ -137,10 +138,9 @@ print '<table class="noborder" width="100%">';
 // conf qui permet de garder le comportement originel du module qui recherchait les règles de remises en prenant comme référence la date courante
 _printOnOff('DISCOUNTRULES_SEARCH_WITHOUT_DOCUMENTS_DATE');
 
-
 _printOnOff('DISCOUNTRULES_ALLOW_APPLY_DISCOUNT_TO_TAKE_POS');
 _printOnOff('DISCOUNTRULES_FORCE_RULES_PRICES', $langs->trans('DISCOUNTRULES_FORCE_RULES_PRICES'), $langs->trans('DISCOUNTRULES_FORCE_RULES_PRICES_DESC'));
-global $conf;
+
 // Taux sélectionné
 $options = array('MarkRate','MarginRate');
 $confKey = 'DISCOUNTRULES_MARKUP_MARGIN_RATE';
