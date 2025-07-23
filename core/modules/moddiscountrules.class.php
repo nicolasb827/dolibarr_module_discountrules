@@ -73,7 +73,7 @@ class moddiscountrules extends DolibarrModules
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
 
-		$this->version = '2.25.2';
+		$this->version = '2.25.3';
 
 		// Key used in llx_const table to save module status enabled/disabled (where discountrules is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
@@ -175,34 +175,6 @@ class moddiscountrules extends DolibarrModules
             'thirdparty:+discountrules:TabTitleDiscountRule:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?contextpage=discountrulelistforcompany&fk_company=__ID__',
             // 'thirdparty:+discountrules:TabTitleDiscountRule:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?fk_company=__ID__', // Todo : rectifier le bug de bouble affichage
         );
-//		$this->tabs = array(
-//			// La clé 'product' indique que l'onglet s'ajoute à la fiche produit
-//			'product' => array(
-//				// La clé 'title' est maintenant un tableau pour activer le compteur
-//				'title' => array(
-//					'TabTitleDiscountRule',                                   // 1. Clé de traduction pour le titre (inchangée)
-//					'DiscountRule',                                    		// 2. Nom de la classe pour le comptage
-//					'discountrules/class/discountrule.class.php',      // 3. Chemin vers le fichier de la classe
-//					'compterOccurrencesProduit'                                    // 4. Nom de la méthode à exécuter
-//				),
-//				// --- Les informations suivantes sont reprises de votre code initial ---
-//
-//				// Le nom du module qui ajoute l'onglet
-//				'module' => 'discountrules',
-//
-//				// L'URL de la page de l'onglet (j'ai corrigé ID en ID qui est le standard)
-//				'url' => '/discountrules/discountrule_list.php?contextpage=discountrulelistforproduct&fk_product=__ID__',
-//
-//				// La condition de permission pour voir l'onglet
-//				'perms' => '$user->rights->discountrules->read',
-//
-//				// La position pour l'ordre d'affichage
-//				'position' => 300
-//			)
-////            'thirdparty:+discountrules:TabTitleDiscountRule:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?contextpage=discountrulelistforcompany&fk_company=__ID__',
-//
-//		);
-//		var_dump($this->tabs);die;
 
 		if (! isset($conf->discountrules) || ! isModEnabled('discountrules'))
         {
@@ -214,7 +186,7 @@ class moddiscountrules extends DolibarrModules
 		$this->dictionaries=array();
         /* Example:
         $this->dictionaries=array(
-            'langs'=>'mylangfile@discountrules',
+            'langs'=>'mylangfile@discountrules',n
             'tabname'=>array(MAIN_DB_PREFIX."table1",MAIN_DB_PREFIX."table2",MAIN_DB_PREFIX."table3"),		// List of tables we want to see into dictonnary editor
             'tablib'=>array("Table1","Table2","Table3"),													// Label of tables
             'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table1 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table2 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table3 as f'),	// Request to select fields
