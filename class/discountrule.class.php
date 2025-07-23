@@ -2097,4 +2097,36 @@ class DiscountRule extends CommonObject
 
 		return parent::quote($value, $fieldsentry);
 	}
-}
+
+	/**
+	 * Méthode appelée automatiquement par Dolibarr pour afficher le badge sur l’onglet produit.
+	 * @param object $object      (objet produit, parfois utile pour récupérer l'id)
+	 * @return int   Le nombre à afficher dans le badge (0 si aucun)
+	 */
+	public static function compterOccurrencesProduit(int $id , object $object) : int
+	{
+		global $db, $conf;
+
+
+		// Debug dans les logs Dolibarr (à lire dans /dolibarr/documents/dolibarr.log)
+		dol_syslog('DEBUG DiscountRule::compterOccurrencesProduit, id=' . $id, LOG_DEBUG);
+
+
+		$sql = 'SELECT COUNT(d.rowid)';
+		$sql .= ' FROM ' . $db->prefix() . 'discountrule as d';
+		$sql .= ' WHERE d.fk_product = ' . (int)$id;
+		$sql .= ' AND d.entity IN (0,1) ';
+
+		$resql = $db->query($sql);
+
+		if ($resql) {
+			$row = $db->fetch_row($resql);
+			if ($row) {
+				return (int)$row[0];
+			}
+		} else {
+			dol_syslog('Erreur SQL dans DiscountRule::compterOccurrencesProduit : ' . $db->lasterror(), LOG_ERR);
+		}
+
+		return 0;
+	}}
