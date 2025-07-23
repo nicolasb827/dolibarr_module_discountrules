@@ -2099,17 +2099,16 @@ class DiscountRule extends CommonObject
 	}
 
 	/**
-	 * Méthode appelée automatiquement par Dolibarr pour afficher le badge sur l’onglet produit.
-	 * @param object $object      (objet produit, parfois utile pour récupérer l'id)
-	 * @return int   Le nombre à afficher dans le badge (0 si aucun)
+	 * Method automatically called by Dolibarr to display the badge on the product tab.
+	 * @param object $object      (product object, sometimes useful to get the id)
+	 * @return int   The number to display in the badge (0 if none)
 	 */
-	public static function compterOccurrencesProduit(int $id , object $object) : int
+	public static function countProductOccurrences(int $id , object $object) : int
 	{
 		global $db, $conf;
 
 
-		// Debug dans les logs Dolibarr (à lire dans /dolibarr/documents/dolibarr.log)
-		dol_syslog('DEBUG DiscountRule::compterOccurrencesProduit, id=' . $id, LOG_DEBUG);
+		dol_syslog('DEBUG DiscountRule::countProductOccurrences, id=' . $id, LOG_DEBUG);
 
 
 		$sql = 'SELECT COUNT(d.rowid)';
@@ -2125,7 +2124,7 @@ class DiscountRule extends CommonObject
 				return (int)$row[0];
 			}
 		} else {
-			dol_syslog('Erreur SQL dans DiscountRule::compterOccurrencesProduit : ' . $db->lasterror(), LOG_ERR);
+			dol_syslog('SQL Error in DiscountRule::countProductOccurrences: ' . $db->lasterror(), LOG_ERR);
 		}
 
 		return 0;

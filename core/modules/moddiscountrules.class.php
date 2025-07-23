@@ -171,7 +171,7 @@ class moddiscountrules extends DolibarrModules
 		// 'thirdparty'       to add a tab in third party view
 		// 'user'             to add a tab in user view
         $this->tabs = array(
-				'product:+discountrules,:TabTitleDiscountRule,DiscountRule,/discountrules/class/discountrule.class.php,compterOccurrencesProduit:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?contextpage=discountrulelistforproduct&fk_product=__ID__',
+				'product:+discountrules,:TabTitleDiscountRule,DiscountRule,/discountrules/class/discountrule.class.php,countProductOccurrences:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?contextpage=discountrulelistforproduct&fk_product=__ID__',
             'thirdparty:+discountrules:TabTitleDiscountRule:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?contextpage=discountrulelistforcompany&fk_company=__ID__',
             // 'thirdparty:+discountrules:TabTitleDiscountRule:discountrules@discountrules:$user->rights->discountrules->read:/discountrules/discountrule_list.php?fk_company=__ID__', // Todo : rectifier le bug de bouble affichage
         );
@@ -186,7 +186,7 @@ class moddiscountrules extends DolibarrModules
 		$this->dictionaries=array();
         /* Example:
         $this->dictionaries=array(
-            'langs'=>'mylangfile@discountrules',n
+            'langs'=>'mylangfile@discountrules',
             'tabname'=>array(MAIN_DB_PREFIX."table1",MAIN_DB_PREFIX."table2",MAIN_DB_PREFIX."table3"),		// List of tables we want to see into dictonnary editor
             'tablib'=>array("Table1","Table2","Table3"),													// Label of tables
             'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table1 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table2 as f','SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table3 as f'),	// Request to select fields
