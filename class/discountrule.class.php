@@ -2114,7 +2114,7 @@ class DiscountRule extends CommonObject
 		$sql = 'SELECT COUNT(d.rowid)';
 		$sql .= ' FROM ' . $db->prefix() . 'discountrule as d';
 		$sql .= ' WHERE d.fk_product = ' . (int)$id;
-		$sql .= ' AND d.entity IN (0,1) ';
+		$sql .= ' AND d.entity = '. $conf->entity;
 
 		$resql = $db->query($sql);
 
