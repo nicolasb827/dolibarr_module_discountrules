@@ -114,10 +114,10 @@ class discountruleApi extends DolibarrApi
 
         $sql = "SELECT s.rowid";
         if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
-        $sql.= " FROM ".MAIN_DB_PREFIX."discountrule as s";
+        $sql.= " FROM ".$this->db->prefix()."discountrule as s";
 
-        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
-        $sql.= ", ".MAIN_DB_PREFIX."c_stcomm as st";
+        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= ", ".$this->db->prefix()."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
+        $sql.= ", ".$this->db->prefix()."c_stcomm as st";
         $sql.= " WHERE s.fk_stcomm = st.id";
 
 		// Example of use $mode

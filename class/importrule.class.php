@@ -750,7 +750,7 @@ class ImportRule{
 
 	function isCatInType( $val, $col, $type){
 
-		$sql = 'SELECT ' . $col . ' FROM ' . MAIN_DB_PREFIX . "categorie " . " WHERE ";
+		$sql = 'SELECT ' . $col . ' FROM ' . $this->db->prefix() . "categorie " . " WHERE ";
 		$sql .=  $col ." = '" . $this->db->escape($val) . "'";
 		$sql .=  " AND type = ". $type ;
 		$resql = $this->db->getRow($sql);

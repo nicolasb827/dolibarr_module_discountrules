@@ -521,14 +521,16 @@ class DiscountSearch
      * @return string SQL
      */
     public static function getCompanySQLFilters($id) {
+		global $db;
+
         $sql = '';
         $sql .= ' AND ( t.fk_company = '.intval($id).' ';
-        $sql .= ' OR  ((t.fk_c_typent = (SELECT fk_typent FROM '.MAIN_DB_PREFIX.'societe WHERE rowid = '.intval($id).') OR t.fk_c_typent = 0)'; //0 => Tous
-        $sql .= ' AND  (t.fk_country = (SELECT fk_pays FROM '.MAIN_DB_PREFIX.'societe WHERE rowid = '.intval($id).') OR t.fk_country = 0)';
-        $sql .= ' AND  (t.fk_project IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'projet WHERE fk_soc = '.intval($id).') OR t.fk_project = 0 )  ';
+        $sql .= ' OR  ((t.fk_c_typent = (SELECT fk_typent FROM '.$db->prefix().'societe WHERE rowid = '.intval($id).') OR t.fk_c_typent = 0)'; //0 => Tous
+        $sql .= ' AND  (t.fk_country = (SELECT fk_pays FROM '.$db->prefix().'societe WHERE rowid = '.intval($id).') OR t.fk_country = 0)';
+        $sql .= ' AND  (t.fk_project IN (SELECT rowid FROM '.$db->prefix().'projet WHERE fk_soc = '.intval($id).') OR t.fk_project = 0 )  ';
         $sql .= ' AND  (t.rowid IN (SELECT dcc.fk_discountrule 
-                                FROM '.MAIN_DB_PREFIX.'discountrule_category_company dcc 
-                                LEFT JOIN '.MAIN_DB_PREFIX.'categorie_societe cs ON (dcc.fk_category_company = cs.fk_categorie)
+                                FROM '.$db->prefix().'discountrule_category_company dcc 
+                                LEFT JOIN '.$db->prefix().'categorie_societe cs ON (dcc.fk_category_company = cs.fk_categorie)
                                 WHERE cs.fk_soc =  '.intval($id).') OR t.all_category_company = 1)) 
                 AND t.fk_company = 0) '; //Si pas de tiers associé alors vérifie sur les autres params
         return $sql;

@@ -176,33 +176,19 @@ foreach($object->fields as $key => $val)
 }
 
 // Extra fields
-if(version_compare(DOL_VERSION , '17.0.0', '<')) {
-	if (isset($discountRulesExtrafields->attribute_label) && is_array($discountRulesExtrafields->attribute_label) && count($discountRulesExtrafields->attribute_label)) {
-		foreach ($discountRulesExtrafields->attribute_label as $key => $val) {
-			if (!empty($discountRulesExtrafields->attributes[$object->table_element]['list'][$key])) {
-				$arrayfields["ef." . $key] = array(
-						'label' => $discountRulesExtrafields->attribute_label[$key],
-						'checked' => $discountRulesExtrafields->attribute_list[$key],
-						'position' => $discountRulesExtrafields->attribute_pos[$key],
-						'enabled' => $discountRulesExtrafields->attribute_perms[$key]
-				);
-			}
-		}
-	}
-} else {
-	if (isset($discountRulesExtrafields->attributes[$object->element]['label']) && is_array($discountRulesExtrafields->attributes[$object->element]['label']) && count($discountRulesExtrafields->attributes[$object->element]['label'])) {
-		foreach ($discountRulesExtrafields->attributes[$object->element]['label'] as $key => $val) {
-			if (!empty($discountRulesExtrafields->attributes[$object->table_element]['list'][$key])) {
-				$arrayfields["ef." . $key] = array(
-						'label' => $discountRulesExtrafields->attributes[$object->element]['label'][$key],
-						'checked' => $discountRulesExtrafields->attributes[$object->element]['list'][$key],
-						'position' => $discountRulesExtrafields->attributes[$object->element]['pos'][$key],
-						'enabled' =>$discountRulesExtrafields->attributes[$object->element]['perms'][$key]
-				);
-			}
+if (isset($discountRulesExtrafields->attributes[$object->element]['label']) && is_array($discountRulesExtrafields->attributes[$object->element]['label']) && count($discountRulesExtrafields->attributes[$object->element]['label'])) {
+	foreach ($discountRulesExtrafields->attributes[$object->element]['label'] as $key => $val) {
+		if (!empty($discountRulesExtrafields->attributes[$object->table_element]['list'][$key])) {
+			$arrayfields["ef." . $key] = array(
+					'label' => $discountRulesExtrafields->attributes[$object->element]['label'][$key],
+					'checked' => $discountRulesExtrafields->attributes[$object->element]['list'][$key],
+					'position' => $discountRulesExtrafields->attributes[$object->element]['pos'][$key],
+					'enabled' =>$discountRulesExtrafields->attributes[$object->element]['perms'][$key]
+			);
 		}
 	}
 }
+
 $object->fields = dol_sort_array($object->fields, 'position');
 $arrayfields = dol_sort_array($arrayfields, 'position');
 
@@ -318,9 +304,9 @@ $parameters=array();
 $reshook=$hookmanager->executeHooks('printFieldListSelect',$parameters);    // Note that $action and $object may have been modified by hook
 $sql.=$hookmanager->resPrint;
 $sql=preg_replace('/, $/','', $sql);
-$sql.= " FROM ".MAIN_DB_PREFIX."discountrule as t";
+$sql.= " FROM ".$db->prefix()."discountrule as t";
 if (isset($discountRulesExtrafields->attribute_label) && is_array($discountRulesExtrafields->attribute_label) && count($discountRulesExtrafields->attribute_label)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."discountrule_extrafields as ef on (t.rowid = ef.fk_object)";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."societe as s on (s.rowid = t.fk_company)";
+$sql.= " LEFT JOIN ".$db->prefix()."societe as s on (s.rowid = t.fk_company)";
 //$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."categorie as cs on (cs.rowid = t.fk_category_company  AND  cs.type = 2 )";
 //$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."categorie as cp on (cp.rowid = t.fk_category_product  AND  cp.type = 0 )";
 
@@ -344,7 +330,7 @@ if(!empty($TCategoryProduct)){
 	$TCategoryProduct = array_map('intval', $TCategoryProduct);
 
 	$sql.= ' AND t.rowid IN (SELECT dcp.fk_discountrule 
-	FROM '.MAIN_DB_PREFIX.'discountrule_category_product dcp 
+	FROM '.$db->prefix().'discountrule_category_product dcp 
 	WHERE dcp.fk_category_product IN ('.implode(',', $TCategoryProduct).')
 	)';
 }
@@ -353,7 +339,7 @@ if(!empty($TCategoryCompany)){
 	$TCategoryCompany = array_map('intval', $TCategoryCompany);
 
 	$sql.= ' AND t.rowid IN (SELECT dcc.fk_discountrule 
-	FROM '.MAIN_DB_PREFIX.'discountrule_category_company dcc 
+	FROM '.$db->prefix().'discountrule_category_company dcc 
 	WHERE dcc.fk_category_company IN ('.implode(',', $TCategoryCompany).')
 	)';
 }

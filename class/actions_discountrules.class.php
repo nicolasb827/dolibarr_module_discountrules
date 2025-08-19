@@ -44,7 +44,7 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 
 
 	/**
-	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
+	 * @var array Hook results. Propagated to $this->results for later reuse
 	 */
 	public $results = array();
 
@@ -457,15 +457,8 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 			// Mass action
 			if ($massaction === 'addtocategory' || $massaction === 'removefromcategory') {
 				$TSearch_categ = array();
-				if (intval(DOL_VERSION) > 10) {
-					// After Dolibarr V10 it's a category multiselect field
-					$TSearch_categ = GETPOST("search_category_product_list", 'array');
-				} else {
-					$get_search_categ = GETPOST('search_categ', 'int');
-					if (!empty($get_search_categ)) {
-						$TSearch_categ[] = $get_search_categ;
-					}
-				}
+				$TSearch_categ = GETPOST("search_category_product_list", 'array');
+
 
 				// Get current categories
 				require_once DOL_DOCUMENT_ROOT . '/categories/class/categorie.class.php';
@@ -531,6 +524,55 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 				}
 			}
 
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Overloading the completeTabsHead function : replacing the parent's function with the one below
+	 *
+	 * @param array()         $parameters     Hook metadatas (context, etc...)
+	 * @param CommonObject $object The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param string $action Current action (if set). Generally create or edit or null
+	 * @param HookManager $hookmanager Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	public function completeTabsHead($parameters, &$object, &$action, $hookmanager)
+	{
+		global $conf, $user, $langs, $db;
+		if (!empty($parameters['object']) && $parameters['mode'] === 'add') {
+			$pObject = $parameters['object'];
+			if (in_array($pObject->element, array('product', 'societe'))) {
+				if ($pObject->element == 'product') {
+					$column = 'fk_product';
+				} elseif ($pObject->element == 'societe') {
+					$column = 'fk_company';
+				}
+
+				if (!empty($parameters['head'])) {
+					foreach ($parameters['head'] as $h => $headV) if(!empty($headV)){
+						if ($headV[2] == 'discountrules') {
+							$nbRules = 0;
+
+							if($column == 'fk_company') {
+								include_once __DIR__ . '/discountSearch.class.php';
+							    $sql = 'SELECT COUNT(*) as nbRules FROM '.$db->prefix().'discountrule t WHERE 1=1';
+							    $sql .= DiscountSearch::getCompanySQLFilters($pObject->id);
+                            } else {
+							    $sql = 'SELECT COUNT(*) as nbRules FROM '.$db->prefix().'discountrule drule WHERE '.$column.' = '.intval($pObject->id).';';
+                            }
+							$resql= $pObject->db->query($sql);
+							if($resql>0){
+								$obj = $pObject->db->fetch_object($resql);
+								$nbRules = $obj->nbRules;
+							}
+
+							if ($nbRules > 0) $parameters['head'][$h][1] = $langs->trans('TabTitleDiscountRule') . ' <span class="badge">' . ($nbRules) . '</span>';
+						}
+					}
+				}
+			}
 		}
 
 		return 0;

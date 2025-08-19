@@ -127,7 +127,7 @@ class Validate
 		}
 
 		foreach ($value_arr as $val) {
-			$sql = 'SELECT ' . $col . ' FROM ' . MAIN_DB_PREFIX . $table . " WHERE ";
+			$sql = 'SELECT ' . $col . ' FROM ' . $this->db->prefix() . $table . " WHERE ";
 			$sql .=  $col ." = '" . $this->db->escape($val) . "'"; // nore quick than count(*) to check existing of a row
 			$resql = $this->db->getRow($sql);
 			if ($resql) {

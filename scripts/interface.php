@@ -353,17 +353,17 @@ function _exportProductsPrices(){
 	$parameters = array();
 	$reshook = $hookmanager->executeHooks('printFieldListSelect', $parameters); // Note that $action and $object may have been modified by hook
 	$sql .= $hookmanager->resPrint;
-	$sql .= ' FROM '.MAIN_DB_PREFIX.'product as p';
-	if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_extrafields as ef on (p.rowid = ef.fk_object)";
-	if (!empty($searchCategoryProductList) || !empty($catid)) $sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_product as cp ON p.rowid = cp.fk_product"; // We'll need this table joined to the select in order to filter by categ
-	$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_fournisseur_price as pfp ON p.rowid = pfp.fk_product";
+	$sql .= ' FROM '.$db->prefix().'product as p';
+	if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".$db->prefix()."product_extrafields as ef on (p.rowid = ef.fk_object)";
+	if (!empty($searchCategoryProductList) || !empty($catid)) $sql .= ' LEFT JOIN '.$db->prefix()."categorie_product as cp ON p.rowid = cp.fk_product"; // We'll need this table joined to the select in order to filter by categ
+	$sql .= " LEFT JOIN ".$db->prefix()."product_fournisseur_price as pfp ON p.rowid = pfp.fk_product";
 	// multilang
-	if (getDolGlobalInt('MAIN_MULTILANGS')) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_lang as pl ON pl.fk_product = p.rowid AND pl.lang = '".$langs->getDefaultLang()."'";
+	if (getDolGlobalInt('MAIN_MULTILANGS')) $sql .= " LEFT JOIN ".$db->prefix()."product_lang as pl ON pl.fk_product = p.rowid AND pl.lang = '".$langs->getDefaultLang()."'";
 
 	if (isModEnabled('variants') && (getDolGlobalInt('PRODUIT_ATTRIBUTES_HIDECHILD') && !$show_childproducts)) {
-		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product_attribute_combination pac ON pac.fk_product_child = p.rowid";
+		$sql .= " LEFT JOIN ".$db->prefix()."product_attribute_combination pac ON pac.fk_product_child = p.rowid";
 	}
-	if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_units cu ON cu.rowid = p.fk_unit";
+	if (getDolGlobalInt('PRODUCT_USE_UNITS'))   $sql .= " LEFT JOIN ".$db->prefix()."c_units cu ON cu.rowid = p.fk_unit";
 
 
 	$sql .= ' WHERE p.entity IN ('.getEntity('product').')';
@@ -406,7 +406,7 @@ function _exportProductsPrices(){
 			if (intval($searchCategoryProduct) == -2) {
 				$searchCategoryProductSqlList[] = "cp.fk_categorie IS NULL";
 			} elseif (intval($searchCategoryProduct) > 0) {
-				$searchCategoryProductSqlList[] = "p.rowid IN (SELECT fk_product FROM ".MAIN_DB_PREFIX."categorie_product WHERE fk_categorie = ".$searchCategoryProduct.")";
+				$searchCategoryProductSqlList[] = "p.rowid IN (SELECT fk_product FROM ".$db->prefix()."categorie_product WHERE fk_categorie = ".$searchCategoryProduct.")";
 			}
 		}
 		if (!empty($searchCategoryProductSqlList)) {
@@ -499,7 +499,7 @@ function _exportProductsPrices(){
 			if (getDolGlobalInt('MAIN_MULTILANGS'))  // If multilang is enabled
 			{
 				$sql = "SELECT label";
-				$sql .= " FROM ".MAIN_DB_PREFIX."product_lang";
+				$sql .= " FROM ".$db->prefix()."product_lang";
 				$sql .= " WHERE fk_product=".$obj->rowid;
 				$sql .= " AND lang='".$db->escape($langs->getDefaultLang())."'";
 				$sql .= " LIMIT 1";
