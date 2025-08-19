@@ -468,6 +468,11 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 				if (intval(DOL_VERSION) > 10) {
 					// After Dolibarr V10 it's a category multiselect field
 					$TSearch_categ = GETPOST("search_category_product_list", 'array');
+				} else {
+					$get_search_categ = GETPOST('search_categ', 'int');
+					if (!empty($get_search_categ)) {
+						$TSearch_categ[] = $get_search_categ;
+					}
 				}
 
 				// Get current categories
@@ -596,7 +601,12 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 		//Recup le taux selectionné + Taux minimum
 		$options = array(0 => 'MarkRate', 1 => 'MarginRate');
 		$valueConfMarkupMarginRate = $options[getDolGlobalInt('DISCOUNTRULES_MARKUP_MARGIN_RATE')];
-		$minimumRate = getDolGlobalFloat('DISCOUNTRULES_MINIMUM_RATE');
+		if (intval(DOL_VERSION) <= 19)
+		{
+			$minimumRate = (float)getDolGlobalString('DISCOUNTRULES_MINIMUM_RATE');
+		} else {
+			$minimumRate = getDolGlobalFloat('DISCOUNTRULES_MINIMUM_RATE');
+		}
 
 		?>
 		<script type="text/javascript">
