@@ -146,14 +146,6 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 					return -1;
 				}
 
-				// TODO Mis en commentaire le 23/08/2023 car normalement useless à virer en 2024 si tjs là
-//				$discountrule = new DiscountRule($this->db);
-//				$c = new Categorie($this->db);
-//				$client = new Societe($this->db);
-//				$client->fetch($object->socid);
-//				$TCompanyCat = $c->containing($object->socid, Categorie::TYPE_CUSTOMER, 'id');
-//				$TCompanyCat = DiscountRule::getAllConnectedCats($TCompanyCat);
-
 				$updated = 0;
 				$updaterror = 0;
 
@@ -465,15 +457,8 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 			// Mass action
 			if ($massaction === 'addtocategory' || $massaction === 'removefromcategory') {
 				$TSearch_categ = array();
-				if (intval(DOL_VERSION) > 10) {
-					// After Dolibarr V10 it's a category multiselect field
-					$TSearch_categ = GETPOST("search_category_product_list", 'array');
-				} else {
-					$get_search_categ = GETPOST('search_categ', 'int');
-					if (!empty($get_search_categ)) {
-						$TSearch_categ[] = $get_search_categ;
-					}
-				}
+				$TSearch_categ = GETPOST("search_category_product_list", 'array');
+
 
 				// Get current categories
 				require_once DOL_DOCUMENT_ROOT . '/categories/class/categorie.class.php';
@@ -569,14 +554,13 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 					foreach ($parameters['head'] as $h => $headV) if(!empty($headV)){
 						if ($headV[2] == 'discountrules') {
 							$nbRules = 0;
-							$resql = $pObject->db->query('SELECT COUNT(*) as nbRules FROM ' . MAIN_DB_PREFIX . 'discountrule drule WHERE ' . $column . ' = ' . intval($pObject->id) . ';');
 
 							if($column == 'fk_company') {
-							    dol_include_once('/discountrules/class/discountSearch.class.php');
-							    $sql = 'SELECT COUNT(*) as nbRules FROM '.MAIN_DB_PREFIX.'discountrule t WHERE 1=1';
+								include_once __DIR__ . '/discountrules/class/discountSearch.class.php';
+							    $sql = 'SELECT COUNT(*) as nbRules FROM '.$db->prefix().'discountrule t WHERE 1=1';
 							    $sql .= DiscountSearch::getCompanySQLFilters($pObject->id);
                             } else {
-							    $sql = 'SELECT COUNT(*) as nbRules FROM '.MAIN_DB_PREFIX.'discountrule drule WHERE '.$column.' = '.intval($pObject->id).';';
+							    $sql = 'SELECT COUNT(*) as nbRules FROM '.$db->prefix().'discountrule drule WHERE '.$column.' = '.intval($pObject->id).';';
                             }
 							$resql= $pObject->db->query($sql);
 							if($resql>0){

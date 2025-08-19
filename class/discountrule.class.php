@@ -561,7 +561,7 @@ class DiscountRule extends CommonObject
 	    
 	    if (! $error)
 	    {
-	        $sql = "DELETE FROM ".MAIN_DB_PREFIX.$this->table_element." WHERE rowid = ".$this->id;
+	        $sql = "DELETE FROM ".$this->db->prefix().$this->table_element." WHERE rowid = ".$this->id;
 			$res = $this->db->query($sql);
 	        if ($res)
 	        {
@@ -731,7 +731,7 @@ class DiscountRule extends CommonObject
 	    foreach ($fieldvalues as $k => $v) {
 	        $tmp[] = $k.'='.$this->quote($v, $this->fields[$k]);
 	    }
-	    $sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' SET '.implode( ',', $tmp ).' WHERE rowid='.$this->id ;
+	    $sql = 'UPDATE '.$this->db->prefix().$this->table_element.' SET '.implode( ',', $tmp ).' WHERE rowid='.$this->id ;
 
 	    $this->db->begin();
 	    if (! $error)
@@ -1134,12 +1134,12 @@ class DiscountRule extends CommonObject
 			$sql.= ' END as net_subprice ';
 		}
 
-		$sql.= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' d ';
+		$sql.= ' FROM '.$this->db->prefix().$this->table_element.' d ';
 
 	    // Les conditions de jointure sont dans le WHERE car il y a une condition
-	    $sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.self::table_element_category_company.' cc ON ( cc.fk_discountrule = d.rowid ) ';
-	    $sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.self::table_element_category_product.' cp ON ( cp.fk_discountrule = d.rowid ) ';
-	    $sql.= ' LEFT JOIN '.MAIN_DB_PREFIX.self::table_element_category_project.' cpj ON ( cpj.fk_discountrule = d.rowid ) ';
+	    $sql.= ' LEFT JOIN '.$this->db->prefix().self::table_element_category_company.' cc ON ( cc.fk_discountrule = d.rowid ) ';
+	    $sql.= ' LEFT JOIN '.$this->db->prefix().self::table_element_category_product.' cp ON ( cp.fk_discountrule = d.rowid ) ';
+	    $sql.= ' LEFT JOIN '.$this->db->prefix().self::table_element_category_project.' cpj ON ( cpj.fk_discountrule = d.rowid ) ';
 
 	    $sql.= ' WHERE from_quantity <= '.floatval($from_quantity).' AND `fk_status` = 1 ' ;
 
@@ -1317,7 +1317,7 @@ class DiscountRule extends CommonObject
 	{
 	    $this->TCategoryCompany=array();
 	    
-	    $sql = 'SELECT * FROM '.MAIN_DB_PREFIX.self::table_element_category_company;
+	    $sql = 'SELECT * FROM '.$this->db->prefix().self::table_element_category_company;
 	    $sql.= ' WHERE fk_discountrule = '.$this->id;
 	    
 	    $resql = $this->db->query($sql);
@@ -1389,7 +1389,7 @@ class DiscountRule extends CommonObject
 	            $TInsertSql[] = '('.intval($this->id).','.intval($fk_category_company).')';
 	        }
 	        
-	        $sql = 'INSERT INTO '.MAIN_DB_PREFIX.self::table_element_category_company;
+	        $sql = 'INSERT INTO '.$this->db->prefix().self::table_element_category_company;
 	        $sql.= ' (fk_discountrule,fk_category_company) VALUES '.implode(',', $TInsertSql );
 
 	        $resql = $this->db->query($sql);
@@ -1410,7 +1410,7 @@ class DiscountRule extends CommonObject
 	            $TInsertSql[] = '('.intval($this->id).','.intval($fk_category_company).')';
 	        }
 	        
-	        $sql = 'DELETE FROM '.MAIN_DB_PREFIX.self::table_element_category_company.' WHERE fk_category_company IN ('.implode(',', $TToDel).')  AND fk_discountrule = '.intval($this->id).';';
+	        $sql = 'DELETE FROM '.$this->db->prefix().self::table_element_category_company.' WHERE fk_category_company IN ('.implode(',', $TToDel).')  AND fk_discountrule = '.intval($this->id).';';
 
 	        $resql = $this->db->query($sql);
 	        if (!$resql){
@@ -1424,7 +1424,7 @@ class DiscountRule extends CommonObject
 	    }
 
 
-        $sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' SET all_category_company = '.intval(empty($this->TCategoryCompany)).' WHERE rowid='.$this->id ;
+        $sql = 'UPDATE '.$this->db->prefix().$this->table_element.' SET all_category_company = '.intval(empty($this->TCategoryCompany)).' WHERE rowid='.$this->id ;
         $resql = $this->db->query($sql);
         if (!$resql){
             dol_print_error($this->db);
@@ -1445,7 +1445,7 @@ class DiscountRule extends CommonObject
 	{
 	    $this->TCategoryProduct=array();
 	    
-	    $sql = 'SELECT * FROM '.MAIN_DB_PREFIX.self::table_element_category_product;
+	    $sql = 'SELECT * FROM '.$this->db->prefix().self::table_element_category_product;
 	    $sql.= ' WHERE fk_discountrule = '.$this->id;
 	    
 	    $resql = $this->db->query($sql);
@@ -1488,7 +1488,7 @@ class DiscountRule extends CommonObject
 	            $TInsertSql[] = '('.intval($this->id).','.intval($fk_category_product).')';
 	        }
 	        
-	        $sql = 'INSERT INTO '.MAIN_DB_PREFIX.self::table_element_category_product;
+	        $sql = 'INSERT INTO '.$this->db->prefix().self::table_element_category_product;
 	        $sql.= ' (fk_discountrule,fk_category_product) VALUES '.implode(',', $TInsertSql );
 	        
 	        $resql = $this->db->query($sql);
@@ -1508,7 +1508,7 @@ class DiscountRule extends CommonObject
 	            $TInsertSql[] = '('.intval($this->id).','.intval($fk_category_product).')';
 	        }
 	        
-	        $sql = 'DELETE FROM '.MAIN_DB_PREFIX.self::table_element_category_product.' WHERE fk_category_product IN ('.implode(',', $TToDel).')  AND fk_discountrule = '.intval($this->id).';';
+	        $sql = 'DELETE FROM '.$this->db->prefix().self::table_element_category_product.' WHERE fk_category_product IN ('.implode(',', $TToDel).')  AND fk_discountrule = '.intval($this->id).';';
 	        
 	        $resql = $this->db->query($sql);
 	        if (!$resql){
@@ -1521,7 +1521,7 @@ class DiscountRule extends CommonObject
 	    }
 
 
-        $sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' SET all_category_product = '.intval(empty($this->TCategoryProduct)).' WHERE rowid='.$this->id ;
+        $sql = 'UPDATE '.$this->db->prefix().$this->table_element.' SET all_category_product = '.intval(empty($this->TCategoryProduct)).' WHERE rowid='.$this->id ;
         $resql = $this->db->query($sql);
         if (!$resql){
             dol_print_error($this->db);
@@ -1543,7 +1543,7 @@ class DiscountRule extends CommonObject
 	{
 		$this->TCategoryProject=array();
 
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.self::table_element_category_project;
+		$sql = 'SELECT * FROM '.$this->db->prefix().self::table_element_category_project;
 		$sql.= ' WHERE fk_discountrule = '.$this->id;
 
 		$resql = $this->db->query($sql);
@@ -1586,7 +1586,7 @@ class DiscountRule extends CommonObject
 				$TInsertSql[] = '('.intval($this->id).','.intval($fk_category_project).')';
 			}
 
-			$sql = 'INSERT INTO '.MAIN_DB_PREFIX.self::table_element_category_project;
+			$sql = 'INSERT INTO '.$this->db->prefix().self::table_element_category_project;
 			$sql.= ' (fk_discountrule,fk_category_project) VALUES '.implode(',', $TInsertSql );
 
 			$resql = $this->db->query($sql);
@@ -1606,7 +1606,7 @@ class DiscountRule extends CommonObject
 				$TInsertSql[] = '('.intval($this->id).','.intval($fk_category_project).')';
 			}
 
-			$sql = 'DELETE FROM '.MAIN_DB_PREFIX.self::table_element_category_project.' WHERE fk_category_project IN ('.implode(',', $TToDel).')  AND fk_discountrule = '.intval($this->id).';';
+			$sql = 'DELETE FROM '.$this->db->prefix().self::table_element_category_project.' WHERE fk_category_project IN ('.implode(',', $TToDel).')  AND fk_discountrule = '.intval($this->id).';';
 
 			$resql = $this->db->query($sql);
 			if (!$resql){
@@ -1619,7 +1619,7 @@ class DiscountRule extends CommonObject
 		}
 
 
-		$sql = 'UPDATE '.MAIN_DB_PREFIX.$this->table_element.' SET all_category_project = '.intval(empty($this->TCategoryProject)).' WHERE rowid='.$this->id ;
+		$sql = 'UPDATE '.$this->db->prefix().$this->table_element.' SET all_category_project = '.intval(empty($this->TCategoryProject)).' WHERE rowid='.$this->id ;
 		$resql = $this->db->query($sql);
 		if (!$resql){
 			dol_print_error($this->db);
@@ -1687,8 +1687,8 @@ class DiscountRule extends CommonObject
 		$sql.= ' END as net_subprice ';
 
 
-        $sql.= ' FROM '.MAIN_DB_PREFIX.$tableDet.' line ';
-        $sql.= ' JOIN '.MAIN_DB_PREFIX.$table.' object ON ( line.'.$fkObjectCol.' = object.rowid ) ';
+        $sql.= ' FROM '.$db->prefix().$tableDet.' line ';
+        $sql.= ' JOIN '.$db->prefix().$table.' object ON ( line.'.$fkObjectCol.' = object.rowid ) ';
 
         $sql.= ' WHERE object.fk_statut > 0 ';
         $sql.= ' AND object.fk_soc = '. $fk_company;

@@ -88,10 +88,8 @@ $confToJs->useForcedMod = intval(getDolGlobalInt('DISCOUNTRULES_FORCE_RULES_PRIC
 
 
 // BE CAREFUL : Depending on Dolibarr version, there are 2 kinds of category inputs : single select or multiselect
-if(intval(DOL_VERSION) > 10){
-	// Use an multiselect field
-	$confToJs->catImput = "search_category_product_list";
-}
+// Use an multiselect field
+$confToJs->catImput = "search_category_product_list";
 
 ?>
 

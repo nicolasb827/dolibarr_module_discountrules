@@ -73,7 +73,7 @@ class moddiscountrules extends DolibarrModules
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
 
-		$this->version = '2.6.0';
+		$this->version = '2.26.0';
 
 		// Key used in llx_const table to save module status enabled/disabled (where discountrules is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
@@ -126,7 +126,7 @@ class moddiscountrules extends DolibarrModules
 		$this->requiredby = array();	// List of module ids to disable if this one is disabled
 		$this->conflictwith = array();	// List of module class names as string this module is in conflict with
 		$this->phpmin = array(7,0);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(16,0);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(17,0);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array("discountrules@discountrules","importdiscountrules@discountrules");
 		$this->warnings_activation = array();                     // Warning to show when we activate module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
 		$this->warnings_activation_ext = array();                 // Warning to show when we activate an external module. array('always'='text') or array('FR'='textfr','ES'='textes'...)
@@ -466,7 +466,7 @@ class moddiscountrules extends DolibarrModules
 
 		// TODO à retirer après la version 3.0
 		// ----------------------------------------------------------
-		$sql = "SELECT * FROM ".MAIN_DB_PREFIX."discountrule WHERE 1 LIMIT 1";
+		$sql = "SELECT * FROM ".$this->db->prefix()."discountrule WHERE 1 LIMIT 1";
 		$resql = $this->db->query($sql);
 
 		$first_install = false;
