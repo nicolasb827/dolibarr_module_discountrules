@@ -556,7 +556,7 @@ class Actionsdiscountrules extends \discountrules\RetroCompatCommonHookActions
 							$nbRules = 0;
 
 							if($column == 'fk_company') {
-								include_once __DIR__ . '/discountrules/class/discountSearch.class.php';
+								include_once __DIR__ . '/discountSearch.class.php';
 							    $sql = 'SELECT COUNT(*) as nbRules FROM '.$db->prefix().'discountrule t WHERE 1=1';
 							    $sql .= DiscountSearch::getCompanySQLFilters($pObject->id);
                             } else {
