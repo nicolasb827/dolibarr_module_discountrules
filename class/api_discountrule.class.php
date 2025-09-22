@@ -18,6 +18,10 @@
 
 use Luracast\Restler\RestException;
 
+require_once __DIR__ . '/../core/modules/moddiscountrules.class.php';
+require_once __DIR__ . '/discountrule.class.php';
+require_once __DIR__ . '/discountSearch.class.php';
+
 /**
  * \file    class/api_discountrule.class.php
  * \ingroup discountrules
@@ -31,7 +35,7 @@ use Luracast\Restler\RestException;
  * @access protected
  * @class  DolibarrApiAccess {@requires user,external}
  */
-class discountruleApi extends DolibarrApi
+class discountrules extends DolibarrApi
 {
     /**
      * @var array   $FIELDS     Mandatory fields, checked when create and update object
@@ -39,6 +43,8 @@ class discountruleApi extends DolibarrApi
     static $FIELDS = array(
         'name'
     );
+
+	protected $db = null;
 
     /**
      * @var DiscountRule $discountrule {@type DiscountRule}
@@ -48,13 +54,12 @@ class discountruleApi extends DolibarrApi
     /**
      * Constructor
      *
-     * @url     GET discountrule/
-     *
      */
     function __construct()
     {
 		global $db, $conf;
 		$this->db = $db;
+        //$this->mod = new moddiscountrules($this->db);
         $this->discountrule = new DiscountRule($this->db);
     }
 
@@ -66,7 +71,7 @@ class discountruleApi extends DolibarrApi
      * @param 	int 	$id ID of discountrule
      * @return 	array|mixed data without useless information
 	 *
-     * @url	GET discountrule/{id}
+     * @url	GET /{id}
      * @throws 	RestException
      */
     function get($id)
@@ -100,10 +105,9 @@ class discountruleApi extends DolibarrApi
      * @param string    $sqlfilters Other criteria to filter answers separated by a comma. Syntax example "(t.ref:like:'SO-%') and (t.date_creation:<:'20160101') or (t.import_key:=:'20160101')"
      * @return array Array of discountrule objects
      *
-     * @url	GET /discountrules/
+     * @url	GET /
      */
-    function index($mode, $sortfield = "t.rowid", $sortorder = 'ASC', $limit = 0, $page = 0, $sqlfilters = '') {
-        global $db, $conf;
+    function index($sortfield = "t.rowid", $sortorder = 'ASC', $limit = 0, $page = 0, $sqlfilters = '') {
 
         $obj_ret = array();
 
@@ -112,22 +116,19 @@ class discountruleApi extends DolibarrApi
         // If the internal user must only see his customers, force searching by him
         if (! DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) $search_sale = DolibarrApiAccess::$user->id;
 
-        $sql = "SELECT s.rowid";
+        $sql = "SELECT t.rowid";
         if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
-        $sql.= " FROM ".$this->db->prefix()."discountrule as s";
+        $sql.= " FROM ".$this->db->prefix()."discountrule as t";
 
         if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= ", ".$this->db->prefix()."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
-        $sql.= ", ".$this->db->prefix()."c_stcomm as st";
-        $sql.= " WHERE s.fk_stcomm = st.id";
+        // $sql.= ", ".$this->db->prefix()."c_stcomm as st";
+		$sql .= " WHERE ";
+        // $sql.= " WHERE s.fk_stcomm = st.id";
 
-		// Example of use $mode
-        //if ($mode == 1) $sql.= " AND s.client IN (1, 3)";
-        //if ($mode == 2) $sql.= " AND s.client IN (2, 3)";
-
-        $sql.= ' AND s.entity IN ('.getEntity('discountrule').')';
-        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= " AND s.fk_soc = sc.fk_soc";
-        if ($socid) $sql.= " AND s.fk_soc = ".$socid;
-        if ($search_sale > 0) $sql.= " AND s.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
+        $sql.= ' t.entity IN ('.getEntity('discountrule').')';
+        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= " AND t.fk_soc = sc.fk_soc";
+        if ($socid) $sql.= " AND t.fk_soc = ".$socid;
+        if ($search_sale > 0) $sql.= " AND t.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
         // Insert sale filter
         if ($search_sale > 0)
         {
@@ -143,7 +144,7 @@ class discountruleApi extends DolibarrApi
             $sql.=" AND (".preg_replace_callback('/'.$regexstring.'/', 'DolibarrApi::_forge_criteria_callback', $sqlfilters).")";
         }
 
-        $sql.= $db->order($sortfield, $sortorder);
+        $sql.= $this->db->order($sortfield, $sortorder);
         if ($limit)	{
             if ($page < 0)
             {
@@ -151,17 +152,17 @@ class discountruleApi extends DolibarrApi
             }
             $offset = $limit * $page;
 
-            $sql.= $db->plimit($limit + 1, $offset);
+            $sql.= $this->db->plimit($limit + 1, $offset);
         }
 
-        $result = $db->query($sql);
+        $result = $this->db->query($sql);
         if ($result)
         {
-            $num = $db->num_rows($result);
+            $num = $this->db->num_rows($result);
             while ($i < $num)
             {
-                $obj = $db->fetch_object($result);
-                $discountrule_static = new DiscountRule($db);
+                $obj = $this->db->fetch_object($result);
+                $discountrule_static = new DiscountRule($this->db);
                 if($discountrule_static->fetch($obj->rowid)) {
                     $obj_ret[] = parent::_cleanObjectDatas($discountrule_static);
                 }
@@ -169,7 +170,7 @@ class discountruleApi extends DolibarrApi
             }
         }
         else {
-            throw new RestException(503, 'Error when retrieve discountrule list');
+            throw new RestException(503, 'Error when retrieve discountrule list: ' . $sql);
         }
         if( ! count($obj_ret)) {
             throw new RestException(404, 'No discountrule found');
@@ -183,7 +184,7 @@ class discountruleApi extends DolibarrApi
      * @param array $request_data   Request datas
      * @return int  ID of discountrule
      *
-     * @url	POST discountrule/
+     * @url	POST /
      */
     function post($request_data = NULL)
     {
@@ -209,7 +210,7 @@ class discountruleApi extends DolibarrApi
      * @param array $request_data   Datas
      * @return int
      *
-     * @url	PUT discountrule/{id}
+     * @url	PUT /{id}
      */
     function put($id, $request_data = NULL)
     {
@@ -242,7 +243,7 @@ class discountruleApi extends DolibarrApi
      * @param   int     $id   discountrule ID
      * @return  array
      *
-     * @url	DELETE discountrule/{id}
+     * @url	DELETE /{id}
      */
     function delete($id)
     {
@@ -289,5 +290,38 @@ class discountruleApi extends DolibarrApi
             $discountrule[$field] = $data[$field];
         }
         return $discountrule;
+    }
+
+    /**
+     * search discount price with discount rules
+     * @param int $fk_product product Id
+     * @param int $qty quantity
+     * @param int $fk_c_typent
+     * @param string $timestmap understood by date()
+     * @param int $fk_company
+     * @param int $fk_country
+     * @param int $fk_project
+     * @return array new price
+     *
+     * @url     POST /search
+     */
+    function search(int $fk_product, int $qty, int $fk_c_typent = 0, string $timestamp = '', int $fk_company = 0, int $fk_country = 0, int $fk_project = 0)
+    {
+        if (!DolibarrApiAccess::$user->hasRight('discountrules', 'read')) {
+            throw new RestException(401);
+        }
+        // Check mandatory fields
+		/*
+        $fk_product = GETPOST('fk_product', 'int');
+        $fk_project = GETPOST('fk_project', 'int');
+        $fk_company = GETPOST('fk_company', 'int');
+        $fk_country = GETPOST('fk_country', 'int');
+        $qty = GETPOST('qty', 'int');
+        $fk_c_typent = GETPOST('fk_c_typent', 'int');
+        $date = GETPOST('date', 'none');
+		*/
+
+        $search = new DiscountSearch($this->db);
+        return $search->search($qty, $fk_product, $fk_company, $fk_project, array(), array(), $fk_c_typent, $fk_country, 0, $date);
     }
 }
