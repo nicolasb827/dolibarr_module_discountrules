@@ -322,6 +322,6 @@ class discountrules extends DolibarrApi
 		*/
 
         $search = new DiscountSearch($this->db);
-        return $search->search($qty, $fk_product, $fk_company, $fk_project, array(), array(), $fk_c_typent, $fk_country, 0, $date);
+        return $search->search($qty, $fk_product, $fk_company, $fk_project, array(), array(), $fk_c_typent, $fk_country, 0, $timestamp);
     }
 }
