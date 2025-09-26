@@ -38,13 +38,13 @@ require_once __DIR__ . '/discountSearch.class.php';
 class discountrules extends DolibarrApi
 {
     /**
-     * @var array   $FIELDS     Mandatory fields, checked when create and update object
+     * @var array $FIELDS Mandatory fields, checked when create and update object
      */
     static $FIELDS = array(
         'name'
     );
 
-	protected $db = null;
+    protected $db = null;
 
     /**
      * @var DiscountRule $discountrule {@type DiscountRule}
@@ -57,8 +57,8 @@ class discountrules extends DolibarrApi
      */
     function __construct()
     {
-		global $db, $conf;
-		$this->db = $db;
+        global $db, $conf;
+        $this->db = $db;
         //$this->mod = new moddiscountrules($this->db);
         $this->discountrule = new DiscountRule($this->db);
     }
@@ -68,28 +68,28 @@ class discountrules extends DolibarrApi
      *
      * Return an array with discountrule informations
      *
-     * @param 	int 	$id ID of discountrule
-     * @return 	array|mixed data without useless information
-	 *
-     * @url	GET /{id}
-     * @throws 	RestException
+     * @param int $id ID of discountrule
+     * @return    array|mixed data without useless information
+     *
+     * @url    GET /{id}
+     * @throws    RestException
      */
     function get($id)
     {
-		if(! DolibarrApiAccess::$user->hasRight('discountrules','read')) {
-			throw new RestException(401);
-		}
+        if (!DolibarrApiAccess::$user->hasRight('discountrules', 'read')) {
+            throw new RestException(401);
+        }
 
         $result = $this->discountrule->fetch($id);
-        if( ! $result ) {
+        if (!$result) {
             throw new RestException(404, 'discountrule not found');
         }
 
-		if( ! DolibarrApi::_checkAccessToResource('discountrule',$this->discountrule->id)) {
-			throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
-		}
+        if (!DolibarrApi::_checkAccessToResource('discountrule', $this->discountrule->id)) {
+            throw new RestException(401, 'Access not allowed for login ' . DolibarrApiAccess::$user->login);
+        }
 
-		return $this->_cleanObjectDatas($this->discountrule);
+        return $this->_cleanObjectDatas($this->discountrule);
     }
 
     /**
@@ -97,107 +97,102 @@ class discountrules extends DolibarrApi
      *
      * Get a list of discountrules
      *
-     * @param int		$mode		Use this param to filter list
-     * @param string	$sortfield	Sort field
-     * @param string	$sortorder	Sort order
-     * @param int		$limit		Limit for list
-     * @param int		$page		Page number
-     * @param string    $sqlfilters Other criteria to filter answers separated by a comma. Syntax example "(t.ref:like:'SO-%') and (t.date_creation:<:'20160101') or (t.import_key:=:'20160101')"
+     * @param string $sortfield Sort field
+     * @param string $sortorder Sort order
+     * @param int $limit Limit for list
+     * @param int $page Page number
+     * @param string $sqlfilters Other criteria to filter answers separated by a comma. Syntax example "(t.ref:like:'SO-%') and (t.date_creation:<:'20160101') or (t.import_key:=:'20160101')"
      * @return array Array of discountrule objects
      *
-     * @url	GET /
+     * @url    GET /
      */
-    function index($sortfield = "t.rowid", $sortorder = 'ASC', $limit = 0, $page = 0, $sqlfilters = '') {
+    function index($sortfield = "t.rowid", $sortorder = 'ASC', $limit = 0, $page = 0, $sqlfilters = '')
+    {
 
         $obj_ret = array();
 
         $socid = DolibarrApiAccess::$user->societe_id ? DolibarrApiAccess::$user->societe_id : '';
 
         // If the internal user must only see his customers, force searching by him
-        if (! DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) $search_sale = DolibarrApiAccess::$user->id;
+        $search_sale = 0;
+        if (!DolibarrApiAccess::$user->hasRight('societe', 'client', 'voir') && !$socid) $search_sale = isset(DolibarrApiAccess::$user->id) ? DolibarrApiAccess::$user->id : 0;
 
         $sql = "SELECT t.rowid";
-        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
-        $sql.= " FROM ".$this->db->prefix()."discountrule as t";
+        if ((!DolibarrApiAccess::$user->hasRight('societe', 'client', 'voir') && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
+        $sql .= " FROM " . $this->db->prefix() . "discountrule as t";
 
-        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= ", ".$this->db->prefix()."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
+        if ((!DolibarrApiAccess::$user->hasRight('societe', 'client', 'voir') && !$socid) || $search_sale > 0) $sql .= ", " . $this->db->prefix() . "societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
         // $sql.= ", ".$this->db->prefix()."c_stcomm as st";
-		$sql .= " WHERE ";
+        $sql .= " WHERE ";
         // $sql.= " WHERE s.fk_stcomm = st.id";
 
-        $sql.= ' t.entity IN ('.getEntity('discountrule').')';
-        if ((!DolibarrApiAccess::$user->hasRight('societe','client','voir') && !$socid) || $search_sale > 0) $sql.= " AND t.fk_soc = sc.fk_soc";
-        if ($socid) $sql.= " AND t.fk_soc = ".$socid;
-        if ($search_sale > 0) $sql.= " AND t.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
+        $sql .= ' t.entity IN (' . getEntity('discountrule') . ')';
+        if ((!DolibarrApiAccess::$user->hasRight('societe', 'client', 'voir') && !$socid) || $search_sale > 0) $sql .= " AND t.fk_soc = sc.fk_soc";
+        if ($socid) $sql .= " AND t.fk_soc = " . $socid;
+        if ($search_sale > 0) $sql .= " AND t.fk_company = sc.fk_soc";        // Join for the needed table to filter by sale
         // Insert sale filter
-        if ($search_sale > 0)
-        {
-            $sql .= " AND sc.fk_user = ".$search_sale;
+        if ($search_sale > 0) {
+            $sql .= " AND sc.fk_user = " . $search_sale;
         }
-        if ($sqlfilters)
-        {
-            if (! DolibarrApi::_checkFilters($sqlfilters))
-            {
-                throw new RestException(503, 'Error when validating parameter sqlfilters '.$sqlfilters);
+        if ($sqlfilters) {
+            if (!DolibarrApi::_checkFilters($sqlfilters)) {
+                throw new RestException(503, 'Error when validating parameter sqlfilters ' . $sqlfilters);
             }
-	        $regexstring='\(([^:\'\(\)]+:[^:\'\(\)]+:[^:\(\)]+)\)';
-            $sql.=" AND (".preg_replace_callback('/'.$regexstring.'/', 'DolibarrApi::_forge_criteria_callback', $sqlfilters).")";
+            $regexstring = '\(([^:\'\(\)]+:[^:\'\(\)]+:[^:\(\)]+)\)';
+            $sql .= " AND (" . preg_replace_callback('/' . $regexstring . '/', 'DolibarrApi::_forge_criteria_callback', $sqlfilters) . ")";
         }
 
-        $sql.= $this->db->order($sortfield, $sortorder);
-        if ($limit)	{
-            if ($page < 0)
-            {
+        $sql .= $this->db->order($sortfield, $sortorder);
+        if ($limit) {
+            if ($page < 0) {
                 $page = 0;
             }
             $offset = $limit * $page;
 
-            $sql.= $this->db->plimit($limit + 1, $offset);
+            $sql .= $this->db->plimit($limit + 1, $offset);
         }
 
         $result = $this->db->query($sql);
-        if ($result)
-        {
+        if ($result) {
             $num = $this->db->num_rows($result);
-            while ($i < $num)
-            {
+            $i = 0;
+            while ($i < $num) {
                 $obj = $this->db->fetch_object($result);
                 $discountrule_static = new DiscountRule($this->db);
-                if($discountrule_static->fetch($obj->rowid)) {
-                    $obj_ret[] = parent::_cleanObjectDatas($discountrule_static);
+                if ($discountrule_static->fetch($obj->rowid)) {
+                    $obj_ret[] = $this->_cleanObjectDatas($discountrule_static);
                 }
                 $i++;
             }
-        }
-        else {
+        } else {
             throw new RestException(503, 'Error when retrieve discountrule list: ' . $sql);
         }
-        if( ! count($obj_ret)) {
+        if (!count($obj_ret)) {
             throw new RestException(404, 'No discountrule found');
         }
-		return $obj_ret;
+        return $obj_ret;
     }
 
     /**
      * Create discountrule object
      *
-     * @param array $request_data   Request datas
+     * @param array $request_data Request datas
      * @return int  ID of discountrule
      *
-     * @url	POST /
+     * @url    POST /
      */
     function post($request_data = NULL)
     {
-        if(! DolibarrApiAccess::$user->hasRight('discountrules','create')) {
-			throw new RestException(401);
-		}
+        if (!DolibarrApiAccess::$user->hasRight('discountrules', 'create')) {
+            throw new RestException(401);
+        }
         // Check mandatory fields
         $result = $this->_validate($request_data);
 
-        foreach($request_data as $field => $value) {
+        foreach ($request_data as $field => $value) {
             $this->discountrule->$field = $value;
         }
-        if( ! $this->discountrule->create(DolibarrApiAccess::$user)) {
+        if (!$this->discountrule->create(DolibarrApiAccess::$user)) {
             throw new RestException(500);
         }
         return $this->discountrule->id;
@@ -206,33 +201,33 @@ class discountrules extends DolibarrApi
     /**
      * Update discountrule
      *
-     * @param int   $id             Id of discountrule to update
-     * @param array $request_data   Datas
+     * @param int $id Id of discountrule to update
+     * @param array $request_data Datas
      * @return int
      *
-     * @url	PUT /{id}
+     * @url    PUT /{id}
      */
     function put($id, $request_data = NULL)
     {
-        if(! DolibarrApiAccess::$user->hasRight('discountrules','create')) {
-			throw new RestException(401);
-		}
+        if (!DolibarrApiAccess::$user->hasRight('discountrules', 'create')) {
+            throw new RestException(401);
+        }
 
         $result = $this->discountrule->fetch($id);
-        if( ! $result ) {
+        if (!$result) {
             throw new RestException(404, 'discountrule not found');
         }
 
-		if( ! DolibarrApi::_checkAccessToResource('discountrule',$this->discountrule->id)) {
-			throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
-		}
+        if (!DolibarrApi::_checkAccessToResource('discountrule', $this->discountrule->id)) {
+            throw new RestException(401, 'Access not allowed for login ' . DolibarrApiAccess::$user->login);
+        }
 
-        foreach($request_data as $field => $value) {
+        foreach ($request_data as $field => $value) {
             $this->discountrule->$field = $value;
         }
 
-        if($this->discountrule->update($id, DolibarrApiAccess::$user))
-            return $this->get ($id);
+        if ($this->discountrule->update($id, DolibarrApiAccess::$user))
+            return $this->get($id);
 
         return false;
     }
@@ -240,31 +235,30 @@ class discountrules extends DolibarrApi
     /**
      * Delete discountrule
      *
-     * @param   int     $id   discountrule ID
+     * @param int $id discountrule ID
      * @return  array
      *
-     * @url	DELETE /{id}
+     * @url    DELETE /{id}
      */
     function delete($id)
     {
-        if(! DolibarrApiAccess::$user->hasRight('discountrules','delete')) {
-			throw new RestException(401);
-		}
+        if (!DolibarrApiAccess::$user->hasRight('discountrules', 'delete')) {
+            throw new RestException(401);
+        }
         $result = $this->discountrule->fetch($id);
-        if( ! $result ) {
+        if (!$result) {
             throw new RestException(404, 'discountrule not found');
         }
 
-		if( ! DolibarrApi::_checkAccessToResource('discountrule',$this->discountrule->id)) {
-			throw new RestException(401, 'Access not allowed for login '.DolibarrApiAccess::$user->login);
-		}
+        if (!DolibarrApi::_checkAccessToResource('discountrule', $this->discountrule->id)) {
+            throw new RestException(401, 'Access not allowed for login ' . DolibarrApiAccess::$user->login);
+        }
 
-        if( !$this->discountrule->delete($id))
-        {
+        if (!$this->discountrule->delete($id)) {
             throw new RestException(500);
         }
 
-         return array(
+        return array(
             'success' => array(
                 'code' => 200,
                 'message' => 'discountrule deleted'
@@ -276,7 +270,7 @@ class discountrules extends DolibarrApi
     /**
      * Validate fields before create or update object
      *
-     * @param array $data   Data to validate
+     * @param array $data Data to validate
      * @return array
      *
      * @throws RestException
@@ -311,7 +305,7 @@ class discountrules extends DolibarrApi
             throw new RestException(401);
         }
         // Check mandatory fields
-		/*
+        /*
         $fk_product = GETPOST('fk_product', 'int');
         $fk_project = GETPOST('fk_project', 'int');
         $fk_company = GETPOST('fk_company', 'int');
@@ -319,9 +313,65 @@ class discountrules extends DolibarrApi
         $qty = GETPOST('qty', 'int');
         $fk_c_typent = GETPOST('fk_c_typent', 'int');
         $date = GETPOST('date', 'none');
-		*/
+        */
 
         $search = new DiscountSearch($this->db);
         return $search->search($qty, $fk_product, $fk_company, $fk_project, array(), array(), $fk_c_typent, $fk_country, 0, $timestamp);
+    }
+
+    protected function _cleanObjectDatas($object)
+    {
+        $object = parent::_cleanObjectDatas($object);
+        unset($object->contacts_id);
+        unset($object->contacts_ids);
+        unset($object->contacts_ids_internal);
+        unset($object->linkedObjectsIds);
+        unset($object->canvas);
+        unset($object->import_key);
+        unset($object->origin_type);
+        unset($object->origin_id);
+        unset($object->country_id);
+        unset($object->country_code);
+        unset($object->state_id);
+        unset($object->region_id);
+        unset($object->barcode_type);
+        unset($object->barcode_type_coder);
+        unset($object->mode_reglement_id);
+        unset($object->cond_reglement_id);
+        unset($object->demand_reason_id);
+        unset($object->transport_mode_id);
+        unset($object->shipping_method_id);
+        unset($object->shipping_method);
+        unset($object->last_main_doc);
+        unset($object->lines);
+        unset($object->actiontypecode);
+        unset($object->name);
+        unset($object->lastname);
+        unset($object->firstname);
+        unset($object->civility_id);
+        unset($object->civility_code);
+        unset($object->user_author);
+        unset($object->user_creation);
+        unset($object->user_creation_id);
+        unset($object->user_valid);
+        unset($object->user_validation);
+        unset($object->user_validation_id);
+        unset($object->user_closing_id);
+        unset($object->user_modification);
+        unset($object->user_modification_id);
+        unset($object->fk_user_modif);
+        unset($object->specimen);
+        unset($object->totalpaid);
+        unset($object->extraparams);
+        unset($object->cond_reglement_supplier_id);
+        unset($object->deposit_percent);
+        unset($object->retained_warranty_fk_cond_reglement);
+        unset($object->warehouse_id);
+        unset($object->reserror);
+        unset($object->TCategoryProduct);
+        unset($object->TCategoryProject);
+        unset($object->TCategoryCompany);
+        unset($object->lastFetchByCritResult);
+        return $object;
     }
 }
